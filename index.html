@@ -46,8 +46,11 @@
     .password-label{font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
     .password-box{display:flex;align-items:center;justify-content:space-between;gap:12px;
       padding:10px;border-radius:14px;background:#f9fafb;border:1px solid var(--border)}
-    .password-output{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:1.06rem;color:var(--text);
-      cursor:pointer;user-select:none;padding:6px 8px;border-radius:8px;flex:1;overflow-x:auto;white-space:nowrap}
+    .password-output{
+      font-family:"SF Mono",Menlo,Consolas,monospace;font-size:1.06rem;color:var(--text);
+      cursor:pointer;user-select:none;padding:4px 6px;border-radius:6px;display:inline-block;max-width:100%;
+      white-space:nowrap;overflow-x:auto;transition:background .15s ease;
+    }
     .password-output:hover{background:var(--accent-soft)}
     .copy-btn{border:none;border-radius:999px;padding:6px 10px;background:var(--accent-soft);color:var(--accent);cursor:pointer}
 
@@ -69,7 +72,7 @@
 <body>
   <div class="wrap" id="app">
     <div class="title"><span class="logo">P</span>Password Helper</div>
-    <p class="subtitle">Generate simple or strong, easy-to-remember passwords. Click the password to copy.</p>
+    <p class="subtitle">Generate simple or strong, easy-to-remember passwords.</p>
 
     <div class="controls">
       <button id="btnSimple" class="btn primary">🙂 Simple</button>
@@ -84,7 +87,7 @@
     </div>
   </div>
 
-  <!-- Modal / Popup for API snippet -->
+  <!-- API modal -->
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document" aria-labelledby="apiTitle">
       <h3 id="apiTitle">PowerShell example</h3>
@@ -99,106 +102,72 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
   </div>
 
   <script>
-    // Front-end uses the Pages Functions endpoints (/simple and /strong).
     const out = document.getElementById('passwordOutput');
     const copyBtn = document.getElementById('copyBtn');
-    const btnSimple = document.getElementById('btnSimple');
-    const btnStrong = document.getElementById('btnStrong');
-    const btnApi = document.getElementById('btnApi');
-
     const overlay = document.getElementById('overlay');
     const apiCode = document.getElementById('apiCode');
     const copyApi = document.getElementById('copyApi');
     const closeApi = document.getElementById('closeApi');
 
     async function fetchPassword(type){
-      try {
-        const r = await fetch('/' + type, { cache: "no-store" });
-        if (!r.ok) throw new Error('Network error');
+      try{
+        const r = await fetch('/'+type,{cache:'no-store'});
+        if(!r.ok) throw new Error();
         return await r.text();
-      } catch (e) {
-        return 'Error';
-      }
+      }catch{return 'Error';}
     }
-
     async function showPassword(type){
-      out.textContent = '…';
-      const pwd = await fetchPassword(type);
-      out.textContent = pwd;
-      document.getElementById('passwordLabel').textContent = type === 'strong' ? 'Strong password' : 'Simple password';
+      out.textContent='…';
+      const pwd=await fetchPassword(type);
+      out.textContent=pwd;
+      document.getElementById('passwordLabel').textContent=type==='strong'?'Strong password':'Simple password';
     }
-
     async function copyText(text){
-      if (!text) return;
-      try {
+      if(!text) return;
+      try{
         await navigator.clipboard.writeText(text);
-        copyBtn.textContent = 'Copied ✅';
-        setTimeout(()=>copyBtn.textContent = 'Copy 📋',900);
-      } catch {
-        const fallback = document.createElement('textarea');
-        fallback.value = text;
-        document.body.appendChild(fallback);
-        fallback.select();
-        try { document.execCommand('copy'); copyBtn.textContent = 'Copied ✅'; }
-        catch { copyBtn.textContent = 'Copy failed'; }
-        fallback.remove();
-        setTimeout(()=>copyBtn.textContent = 'Copy 📋',900);
+        copyBtn.textContent='Copied ✅';
+        setTimeout(()=>copyBtn.textContent='Copy 📋',900);
+      }catch{
+        copyBtn.textContent='Copy failed';
+        setTimeout(()=>copyBtn.textContent='Copy 📋',900);
       }
     }
 
-    // click-to-copy for password text
-    out.addEventListener('click', () => copyText(out.textContent));
-    copyBtn.addEventListener('click', () => copyText(out.textContent));
-
-    btnSimple.addEventListener('click', () => showPassword('simple'));
-    btnStrong.addEventListener('click', () => showPassword('strong'));
-
-    // API popup logic
-    btnApi.addEventListener('click', () => {
-      overlay.style.display = 'flex';
+    out.addEventListener('click',()=>copyText(out.textContent));
+    copyBtn.addEventListener('click',()=>copyText(out.textContent));
+    document.getElementById('btnSimple').onclick=()=>showPassword('simple');
+    document.getElementById('btnStrong').onclick=()=>showPassword('strong');
+    document.getElementById('btnApi').onclick=()=>{
+      overlay.style.display='flex';
       overlay.setAttribute('aria-hidden','false');
-      // focus for keyboard users
       apiCode.focus();
-      // ensure code contains exact snippet (hard-coded as requested)
-      apiCode.textContent = '$Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple';
-    });
-
-    closeApi.addEventListener('click', () => {
-      overlay.style.display = 'none';
+    };
+    closeApi.onclick=()=>{
+      overlay.style.display='none';
       overlay.setAttribute('aria-hidden','true');
-      btnApi.focus();
-    });
-
-    // copy snippet from modal
-    copyApi.addEventListener('click', async () => {
-      const text = apiCode.textContent.trim();
-      try {
+    };
+    copyApi.onclick=async()=>{
+      const text=apiCode.textContent.trim();
+      try{
         await navigator.clipboard.writeText(text);
-        copyApi.textContent = 'Copied ✅';
-        setTimeout(()=>copyApi.textContent = 'Copy',900);
-      } catch {
-        copyApi.textContent = 'Copy failed';
-        setTimeout(()=>copyApi.textContent = 'Copy',900);
+        copyApi.textContent='Copied ✅';
+        setTimeout(()=>copyApi.textContent='Copy',900);
+      }catch{
+        copyApi.textContent='Copy failed';
+        setTimeout(()=>copyApi.textContent='Copy',900);
       }
+    };
+    overlay.addEventListener('click',e=>{
+      if(e.target===overlay){overlay.style.display='none';overlay.setAttribute('aria-hidden','true');}
     });
-
-    // close modal on overlay click (but not when clicking inside modal)
-    overlay.addEventListener('click', (ev) => {
-      if (ev.target === overlay) {
-        overlay.style.display = 'none';
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&overlay.style.display==='flex'){
+        overlay.style.display='none';
         overlay.setAttribute('aria-hidden','true');
       }
     });
 
-    // keyboard: Esc closes modal
-    document.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape' && overlay.style.display === 'flex') {
-        overlay.style.display = 'none';
-        overlay.setAttribute('aria-hidden','true');
-      }
-    });
-
-    // start with simple password
     showPassword('simple');
   </script>
 </body>
