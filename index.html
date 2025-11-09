@@ -103,7 +103,7 @@
       border-color: #bfdbfe;
     }
 
-    /* Ensure Simple button text is dark on hover to avoid white-on-white */
+    /* ensure simple stays visible on hover */
     #btnSimple:hover {
       color: #111827;
     }
@@ -135,6 +135,13 @@
       overflow-x: auto;
       scrollbar-width: thin;
       color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .password-output:hover {
+      background: var(--accent-soft);
+      border-radius: 8px;
     }
 
     .copy-btn {
@@ -174,7 +181,7 @@
       Password Helper
     </h1>
     <p class="subtitle">
-      Generate simple or strong, human-readable passwords in one click.
+      Generate simple or strong, easy-to-remember passwords.
     </p>
 
     <div class="buttons">
@@ -184,7 +191,7 @@
 
     <div class="password-label" id="passwordLabel">Simple password</div>
     <div class="password-box">
-      <div class="password-output" id="passwordOutput"></div>
+      <div class="password-output" id="passwordOutput" title="Click to copy"></div>
       <button class="copy-btn" id="copyBtn"><span>Copy</span>📋</button>
     </div>
   </div>
@@ -232,7 +239,7 @@
 
     function genStrong() {
       return safe(() => {
-        const count = 3 + Math.floor(Math.random() * 2); // 3 or 4
+        const count = 3 + Math.floor(Math.random() * 2);
         const parts = Array.from({ length: count }, () => cap(pick(WORDS)));
         const num = rand(100, 9999);
         const sym = pick(SYMBOLS);
@@ -246,6 +253,18 @@
     const label = document.getElementById("passwordLabel");
     const copyBtn = document.getElementById("copyBtn");
 
+    async function copyToClipboard(text) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.innerHTML = "<span>Copied</span>✅";
+        setTimeout(() => (copyBtn.innerHTML = "<span>Copy</span>📋"), 900);
+      } catch {
+        copyBtn.innerHTML = "<span>Press Ctrl+C</span>";
+        setTimeout(() => (copyBtn.innerHTML = "<span>Copy</span>📋"), 900);
+      }
+    }
+
     function showPassword(mode) {
       const pwd = mode === "strong" ? genStrong() : genSimple();
       out.textContent = pwd;
@@ -254,22 +273,10 @@
 
     document.getElementById("btnSimple").onclick = () => showPassword("simple");
     document.getElementById("btnStrong").onclick = () => showPassword("strong");
+    copyBtn.onclick = () => copyToClipboard(out.textContent);
+    out.onclick = () => copyToClipboard(out.textContent); // click password to copy
 
-    copyBtn.onclick = async () => {
-      const text = out.textContent.trim();
-      if (!text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        copyBtn.innerHTML = "<span>Copied</span>✅";
-      } catch {
-        copyBtn.innerHTML = "<span>Press Ctrl+C</span>";
-      }
-      setTimeout(() => {
-        copyBtn.innerHTML = "<span>Copy</span>📋";
-      }, 900);
-    };
-
-    // Start with a Simple password by default
+    // Start with Simple password
     showPassword("simple");
   </script>
 </body>
