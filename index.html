@@ -1,283 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Password Helper</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --bg: #f3f4f6;
-      --card: #ffffff;
-      --accent: #2563eb;
-      --accent-soft: rgba(37,99,235,0.08);
-      --border: #e5e7eb;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --radius-xl: 18px;
-      --shadow-soft: 0 14px 32px rgba(15,23,42,0.12);
+    :root{
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      --bg:#f3f4f6;
+      --card:#ffffff;
+      --accent:#2563eb;
+      --accent-soft:rgba(37,99,235,0.08);
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+      --radius:14px;
+      --shadow:0 14px 32px rgba(15,23,42,0.12);
     }
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top, #e5e7eb 0, #f9fafb 40%, #ffffff 100%);
-      color: var(--text-main);
-      padding: 24px;
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at top,#e5e7eb 0,#f9fafb 40%,#ffffff 100%);
+      color:var(--text);padding:24px;
     }
 
-    .wrap {
-      width: 100%;
-      max-width: 560px;
-      background: var(--card);
-      padding: 22px;
-      border-radius: 24px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid var(--border);
+    .wrap{
+      width:100%;max-width:560px;background:var(--card);padding:22px;border-radius:18px;
+      box-shadow:var(--shadow);border:1px solid var(--border);
     }
+    .title{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-weight:600;font-size:1.25rem}
+    .logo{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,#2563eb,#60a5fa);color:#fff;font-weight:700}
+    .subtitle{margin:0 0 14px;color:var(--muted);font-size:0.92rem}
 
-    .title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 4px;
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .btn{
+      border:1px solid var(--border);padding:8px 12px;border-radius:999px;background:#f9fafb;color:var(--text);
+      cursor:pointer;font-size:0.92rem;display:inline-flex;align-items:center;gap:8px;
+      transition:transform .12s ease,box-shadow .12s ease,background .12s ease
     }
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 18px rgba(37,99,235,.25)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(15,23,42,.08);background:#eff6ff}
+    #btnSimple:hover{color:#111;background:#dbeafe}
 
-    .title span.logo {
-      width: 22px;
-      height: 22px;
-      border-radius: 7px;
-      background: radial-gradient(circle at 20% 0, #2563eb, #60a5fa);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      color: #ffffff;
-      flex-shrink: 0;
-    }
+    .password-label{font-size:.72rem;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+    .password-box{display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:10px;border-radius:14px;background:#f9fafb;border:1px solid var(--border)}
+    .password-output{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:1.06rem;color:var(--text);
+      cursor:pointer;user-select:none;padding:6px 8px;border-radius:8px;flex:1;overflow-x:auto;white-space:nowrap}
+    .password-output:hover{background:var(--accent-soft)}
+    .copy-btn{border:none;border-radius:999px;padding:6px 10px;background:var(--accent-soft);color:var(--accent);cursor:pointer}
 
-    .subtitle {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{background:var(--card);padding:18px;border-radius:12px;max-width:640px;width:92%;box-shadow:0 18px 40px rgba(0,0,0,.35);border:1px solid var(--border)}
+    .modal h3{margin:0 0 8px;font-size:1rem}
+    .code{font-family:Consolas,"Courier New",monospace;background:#0f172a;color:#dbeafe;padding:12px;border-radius:8px;overflow:auto;font-size:0.95rem}
+    .modal .m-controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .modal .m-btn{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:#f9fafb;cursor:pointer}
+    .modal .m-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-    .buttons {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border: 1px solid var(--border);
-      padding: 7px 13px;
-      border-radius: 999px;
-      font-size: 0.84rem;
-      cursor: pointer;
-      background: #f9fafb;
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.16s ease;
-    }
-
-    .btn.primary {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: var(--accent);
-      box-shadow: 0 8px 18px rgba(37,99,235,0.25);
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
-      background: #eff6ff;
-      border-color: #bfdbfe;
-    }
-
-    /* ensure simple stays visible on hover */
-    #btnSimple:hover {
-      color: #111827;
-    }
-
-    .password-label {
-      font-size: 0.72rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 4px;
-    }
-
-    .password-box {
-      margin-bottom: 8px;
-      padding: 10px;
-      border-radius: var(--radius-xl);
-      background: #f9fafb;
-      border: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .password-output {
-      font-family: "SF Mono", Menlo, Consolas, monospace;
-      font-size: 1.08rem;
-      white-space: nowrap;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      color: var(--text-main);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .password-output:hover {
-      background: var(--accent-soft);
-      border-radius: 8px;
-    }
-
-    .copy-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.74rem;
-      background: var(--accent-soft);
-      color: var(--accent);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      flex-shrink: 0;
-      transition: all 0.16s ease;
-    }
-
-    .copy-btn:hover {
-      background: var(--accent);
-      color: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(37,99,235,0.35);
-    }
-
-    @media (max-width: 480px) {
-      .wrap { padding: 18px 16px; }
-      .title { font-size: 1.28rem; }
-      .subtitle { font-size: 0.78rem; }
-      .password-output { font-size: 0.98rem; }
+    @media (max-width:460px){
+      .title{font-size:1.05rem}
+      .password-output{font-size:1rem}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1 class="title">
-      <span class="logo">P</span>
-      Password Helper
-    </h1>
-    <p class="subtitle">
-      Generate simple or strong, easy-to-remember passwords.
-    </p>
+  <div class="wrap" id="app">
+    <div class="title"><span class="logo">P</span>Password Helper</div>
+    <p class="subtitle">Generate simple or strong, easy-to-remember passwords. Click the password to copy.</p>
 
-    <div class="buttons">
-      <button class="btn primary" id="btnSimple">🙂 Simple</button>
-      <button class="btn" id="btnStrong">🛡️ Strong</button>
+    <div class="controls">
+      <button id="btnSimple" class="btn primary">🙂 Simple</button>
+      <button id="btnStrong" class="btn">🛡️ Strong</button>
+      <button id="btnApi" class="btn">🔗 API</button>
     </div>
 
     <div class="password-label" id="passwordLabel">Simple password</div>
     <div class="password-box">
-      <div class="password-output" id="passwordOutput" title="Click to copy"></div>
-      <button class="copy-btn" id="copyBtn"><span>Copy</span>📋</button>
+      <div id="passwordOutput" class="password-output" title="Click to copy"></div>
+      <button id="copyBtn" class="copy-btn">Copy 📋</button>
+    </div>
+  </div>
+
+  <!-- Modal / Popup for API snippet -->
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="apiTitle">
+      <h3 id="apiTitle">PowerShell example</h3>
+      <div class="code" id="apiCode" tabindex="0">
+$Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
+      </div>
+      <div class="m-controls">
+        <button id="copyApi" class="m-btn">Copy</button>
+        <button id="closeApi" class="m-btn primary">Close</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const WORDS = [
-      "acorn","amber","apple","apricot","bamboo","beacon","berry","biscuit",
-      "blossom","breeze","bridge","bright","bubble","cactus","camera","candle",
-      "canyon","carrot","castle","cedar","cherry","citrus","clover","cloud",
-      "coffee","coral","cotton","crystal","daisy","delta","desert","dolphin",
-      "ember","emerald","feather","forest","fossil","frost","galaxy","garden",
-      "ginger","glacier","granite","harbor","harvest","horizon","jasmine",
-      "juniper","lantern","lemon","library","light","maple","meadow","mint",
-      "moon","mountain","nebula","ocean","olive","onyx","orchard","owl","paper",
-      "pebble","pepper","photon","pioneer","planet","plenty","pocket","prairie",
-      "quiet","quartz","rain","raven","river","rocket","sage","sandstone",
-      "shadow","silent","silver","solar","spark","spring","stable","star",
-      "stone","summer","sunrise","sunset","thunder","timber","tower","valley",
-      "velvet","violet","walnut","whisper","willow","winter","zenith"
-    ];
+    // Front-end uses the Pages Functions endpoints (/simple and /strong).
+    const out = document.getElementById('passwordOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const btnSimple = document.getElementById('btnSimple');
+    const btnStrong = document.getElementById('btnStrong');
+    const btnApi = document.getElementById('btnApi');
 
-    const BAD_SUBSTRINGS = [
-      "ass","sex","xxx","porn","nude","naked","boob","jug","slut","prick",
-      "dick","tit","cock","rape"
-    ];
-    const SYMBOLS = "!@#$%^&*";
+    const overlay = document.getElementById('overlay');
+    const apiCode = document.getElementById('apiCode');
+    const copyApi = document.getElementById('copyApi');
+    const closeApi = document.getElementById('closeApi');
 
-    const hasBad = s => BAD_SUBSTRINGS.some(b => s.toLowerCase().includes(b));
-    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-    const cap = w => w.charAt(0).toUpperCase() + w.slice(1);
-    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const safe = fn => {
-      for (let i = 0; i < 50; i++) {
-        const c = fn();
-        if (!hasBad(c)) return c;
+    async function fetchPassword(type){
+      try {
+        const r = await fetch('/' + type, { cache: "no-store" });
+        if (!r.ok) throw new Error('Network error');
+        return await r.text();
+      } catch (e) {
+        return 'Error';
       }
-      return "Safe" + rand(1000, 9999) + pick(SYMBOLS);
-    };
-
-    function genSimple() {
-      return safe(() =>
-        `${cap(pick(WORDS))}${cap(pick(WORDS))}${rand(10, 99)}${pick(SYMBOLS)}`
-      );
     }
 
-    function genStrong() {
-      return safe(() => {
-        const count = 3 + Math.floor(Math.random() * 2);
-        const parts = Array.from({ length: count }, () => cap(pick(WORDS)));
-        const num = rand(100, 9999);
-        const sym = pick(SYMBOLS);
-        return Math.random() < 0.5
-          ? parts.join("") + num + sym
-          : parts[0] + num + parts.slice(1).join("") + sym;
-      });
+    async function showPassword(type){
+      out.textContent = '…';
+      const pwd = await fetchPassword(type);
+      out.textContent = pwd;
+      document.getElementById('passwordLabel').textContent = type === 'strong' ? 'Strong password' : 'Simple password';
     }
 
-    const out = document.getElementById("passwordOutput");
-    const label = document.getElementById("passwordLabel");
-    const copyBtn = document.getElementById("copyBtn");
-
-    async function copyToClipboard(text) {
+    async function copyText(text){
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
-        copyBtn.innerHTML = "<span>Copied</span>✅";
-        setTimeout(() => (copyBtn.innerHTML = "<span>Copy</span>📋"), 900);
+        copyBtn.textContent = 'Copied ✅';
+        setTimeout(()=>copyBtn.textContent = 'Copy 📋',900);
       } catch {
-        copyBtn.innerHTML = "<span>Press Ctrl+C</span>";
-        setTimeout(() => (copyBtn.innerHTML = "<span>Copy</span>📋"), 900);
+        const fallback = document.createElement('textarea');
+        fallback.value = text;
+        document.body.appendChild(fallback);
+        fallback.select();
+        try { document.execCommand('copy'); copyBtn.textContent = 'Copied ✅'; }
+        catch { copyBtn.textContent = 'Copy failed'; }
+        fallback.remove();
+        setTimeout(()=>copyBtn.textContent = 'Copy 📋',900);
       }
     }
 
-    function showPassword(mode) {
-      const pwd = mode === "strong" ? genStrong() : genSimple();
-      out.textContent = pwd;
-      label.textContent = mode === "strong" ? "Strong password" : "Simple password";
-    }
+    // click-to-copy for password text
+    out.addEventListener('click', () => copyText(out.textContent));
+    copyBtn.addEventListener('click', () => copyText(out.textContent));
 
-    document.getElementById("btnSimple").onclick = () => showPassword("simple");
-    document.getElementById("btnStrong").onclick = () => showPassword("strong");
-    copyBtn.onclick = () => copyToClipboard(out.textContent);
-    out.onclick = () => copyToClipboard(out.textContent); // click password to copy
+    btnSimple.addEventListener('click', () => showPassword('simple'));
+    btnStrong.addEventListener('click', () => showPassword('strong'));
 
-    // Start with Simple password
-    showPassword("simple");
+    // API popup logic
+    btnApi.addEventListener('click', () => {
+      overlay.style.display = 'flex';
+      overlay.setAttribute('aria-hidden','false');
+      // focus for keyboard users
+      apiCode.focus();
+      // ensure code contains exact snippet (hard-coded as requested)
+      apiCode.textContent = '$Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple';
+    });
+
+    closeApi.addEventListener('click', () => {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden','true');
+      btnApi.focus();
+    });
+
+    // copy snippet from modal
+    copyApi.addEventListener('click', async () => {
+      const text = apiCode.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        copyApi.textContent = 'Copied ✅';
+        setTimeout(()=>copyApi.textContent = 'Copy',900);
+      } catch {
+        copyApi.textContent = 'Copy failed';
+        setTimeout(()=>copyApi.textContent = 'Copy',900);
+      }
+    });
+
+    // close modal on overlay click (but not when clicking inside modal)
+    overlay.addEventListener('click', (ev) => {
+      if (ev.target === overlay) {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+    });
+
+    // keyboard: Esc closes modal
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+      }
+    });
+
+    // start with simple password
+    showPassword('simple');
   </script>
 </body>
 </html>
