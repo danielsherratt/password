@@ -103,6 +103,11 @@
       border-color: #bfdbfe;
     }
 
+    /* Ensure Simple button text is dark on hover to avoid white-on-white */
+    #btnSimple:hover {
+      color: #111827;
+    }
+
     .password-label {
       font-size: 0.72rem;
       color: var(--accent);
@@ -168,15 +173,16 @@
       <span class="logo">P</span>
       Password Helper
     </h1>
-    <p class="subtitle">Clean, readable passwords from a filtered word list.</p>
+    <p class="subtitle">
+      Generate simple or strong, human-readable passwords in one click.
+    </p>
 
     <div class="buttons">
       <button class="btn primary" id="btnSimple">🙂 Simple</button>
       <button class="btn" id="btnStrong">🛡️ Strong</button>
-      <button class="btn" id="btnRotate">🔁 New</button>
     </div>
 
-    <div class="password-label" id="passwordLabel">Ready</div>
+    <div class="password-label" id="passwordLabel">Simple password</div>
     <div class="password-box">
       <div class="password-output" id="passwordOutput"></div>
       <button class="copy-btn" id="copyBtn"><span>Copy</span>📋</button>
@@ -239,21 +245,15 @@
     const out = document.getElementById("passwordOutput");
     const label = document.getElementById("passwordLabel");
     const copyBtn = document.getElementById("copyBtn");
-    let mode = null;
 
-    function showPassword(m) {
-      mode = m;
-      const pwd = m === "simple" ? genSimple() : genStrong();
+    function showPassword(mode) {
+      const pwd = mode === "strong" ? genStrong() : genSimple();
       out.textContent = pwd;
-      label.textContent = m === "simple" ? "Simple password" : "Strong password";
+      label.textContent = mode === "strong" ? "Strong password" : "Simple password";
     }
 
     document.getElementById("btnSimple").onclick = () => showPassword("simple");
     document.getElementById("btnStrong").onclick = () => showPassword("strong");
-    document.getElementById("btnRotate").onclick = () => {
-      if (!mode) mode = "strong";
-      showPassword(mode);
-    };
 
     copyBtn.onclick = async () => {
       const text = out.textContent.trim();
@@ -269,8 +269,8 @@
       }, 900);
     };
 
-    // Default generate a strong password on load
-    showPassword("strong");
+    // Start with a Simple password by default
+    showPassword("simple");
   </script>
 </body>
 </html>
