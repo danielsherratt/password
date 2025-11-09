@@ -5,6 +5,7 @@
   <title>Password Helper</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root{
       font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -58,7 +59,8 @@
     /* Modal */
     .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:60}
     .modal{background:var(--card);padding:18px;border-radius:12px;max-width:640px;width:92%;
-      box-shadow:0 18px 40px rgba(0,0,0,.35);border:1px solid var(--border);}
+      box-shadow:0 18px 40px rgba(0,0,0,.35);border:1px solid var(--border);animation:fadeIn .25s ease}
+    @keyframes fadeIn {from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
     .modal h3{margin:0 0 8px;font-size:1rem}
     .code{
       font-family:Consolas,"Courier New",monospace;
@@ -69,8 +71,22 @@
       overflow:auto;font-size:0.95rem;
     }
     .modal .m-controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-    .modal .m-btn{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:#f9fafb;cursor:pointer}
+    .modal .m-btn{
+      padding:8px 12px;border-radius:8px;border:1px solid var(--border);
+      background:#f9fafb;cursor:pointer;font-size:0.9rem;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform .15s ease,background .15s ease,box-shadow .15s ease;
+    }
+    .modal .m-btn i{font-size:1rem;}
+    .modal .m-btn:hover{transform:translateY(-1px);background:#e0e7ff}
+    .modal .m-btn:active{animation:pulse .25s ease}
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
     .modal .m-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .modal .m-btn.primary:hover{background:#1e40af}
 
     @media (max-width:460px){
       .title{font-size:1.05rem}
@@ -86,13 +102,13 @@
     <div class="controls">
       <button id="btnSimple" class="btn primary">🙂 Simple</button>
       <button id="btnStrong" class="btn">🛡️ Strong</button>
-      <button id="btnApi" class="btn">🔗 API</button>
+      <button id="btnApi" class="btn"><i class="fa-solid fa-link"></i> API</button>
     </div>
 
     <div class="password-label" id="passwordLabel">Simple password</div>
     <div class="password-box">
       <div id="passwordOutput" class="password-output" title="Click to copy"></div>
-      <button id="copyBtn" class="copy-btn">Copy 📋</button>
+      <button id="copyBtn" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
     </div>
   </div>
 
@@ -104,8 +120,8 @@
 $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       </div>
       <div class="m-controls">
-        <button id="copyApi" class="m-btn">Copy</button>
-        <button id="closeApi" class="m-btn primary">Close</button>
+        <button id="copyApi" class="m-btn"><i class="fa-regular fa-copy"></i> Copy</button>
+        <button id="closeApi" class="m-btn primary"><i class="fa-solid fa-xmark"></i> Close</button>
       </div>
     </div>
   </div>
@@ -135,11 +151,11 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!text) return;
       try{
         await navigator.clipboard.writeText(text);
-        copyBtn.textContent='Copied ✅';
-        setTimeout(()=>copyBtn.textContent='Copy 📋',900);
+        copyBtn.innerHTML='<i class="fa-solid fa-check"></i>';
+        setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
       }catch{
-        copyBtn.textContent='Copy failed';
-        setTimeout(()=>copyBtn.textContent='Copy 📋',900);
+        copyBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+        setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
       }
     }
 
@@ -160,11 +176,11 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       const text=apiCode.textContent.trim();
       try{
         await navigator.clipboard.writeText(text);
-        copyApi.textContent='Copied ✅';
-        setTimeout(()=>copyApi.textContent='Copy',900);
+        copyApi.innerHTML='<i class="fa-solid fa-check"></i> Copied';
+        setTimeout(()=>copyApi.innerHTML='<i class="fa-regular fa-copy"></i> Copy',900);
       }catch{
-        copyApi.textContent='Copy failed';
-        setTimeout(()=>copyApi.textContent='Copy',900);
+        copyApi.innerHTML='<i class="fa-solid fa-xmark"></i> Error';
+        setTimeout(()=>copyApi.innerHTML='<i class="fa-regular fa-copy"></i> Copy',900);
       }
     };
     overlay.addEventListener('click',e=>{
