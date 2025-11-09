@@ -163,7 +163,7 @@
   </style>
 </head>
 <body>
-  <div class="wrap" id="app" hidden>
+  <div class="wrap">
     <h1 class="title">
       <span class="logo">P</span>
       Password Helper
@@ -211,21 +211,24 @@
     const cap = w => w.charAt(0).toUpperCase() + w.slice(1);
     const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
     const safe = fn => {
-      for (let i=0;i<50;i++){const c=fn();if(!hasBad(c))return c;}
-      return "Safe" + rand(1000,9999) + pick(SYMBOLS);
+      for (let i = 0; i < 50; i++) {
+        const c = fn();
+        if (!hasBad(c)) return c;
+      }
+      return "Safe" + rand(1000, 9999) + pick(SYMBOLS);
     };
 
     function genSimple() {
       return safe(() =>
-        `${cap(pick(WORDS))}${cap(pick(WORDS))}${rand(10,99)}${pick(SYMBOLS)}`
+        `${cap(pick(WORDS))}${cap(pick(WORDS))}${rand(10, 99)}${pick(SYMBOLS)}`
       );
     }
 
     function genStrong() {
       return safe(() => {
-        const count = 3 + Math.floor(Math.random() * 2);
-        const parts = Array.from({length: count}, () => cap(pick(WORDS)));
-        const num = rand(100,9999);
+        const count = 3 + Math.floor(Math.random() * 2); // 3 or 4
+        const parts = Array.from({ length: count }, () => cap(pick(WORDS)));
+        const num = rand(100, 9999);
         const sym = pick(SYMBOLS);
         return Math.random() < 0.5
           ? parts.join("") + num + sym
@@ -233,7 +236,6 @@
       });
     }
 
-    const app = document.getElementById("app");
     const out = document.getElementById("passwordOutput");
     const label = document.getElementById("passwordLabel");
     const copyBtn = document.getElementById("copyBtn");
@@ -249,26 +251,26 @@
     document.getElementById("btnSimple").onclick = () => showPassword("simple");
     document.getElementById("btnStrong").onclick = () => showPassword("strong");
     document.getElementById("btnRotate").onclick = () => {
-      if (!mode) mode = "strong"; showPassword(mode);
+      if (!mode) mode = "strong";
+      showPassword(mode);
     };
+
     copyBtn.onclick = async () => {
       const text = out.textContent.trim();
       if (!text) return;
-      await navigator.clipboard.writeText(text);
-      copyBtn.innerHTML = "<span>Copied</span>✅";
-      setTimeout(() => copyBtn.innerHTML = "<span>Copy</span>📋", 900);
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.innerHTML = "<span>Copied</span>✅";
+      } catch {
+        copyBtn.innerHTML = "<span>Press Ctrl+C</span>";
+      }
+      setTimeout(() => {
+        copyBtn.innerHTML = "<span>Copy</span>📋";
+      }, 900);
     };
 
-    // routing
-    const path = location.pathname.toLowerCase();
-    if (path.endsWith("/simple")) {
-      document.write(genSimple());
-    } else if (path.endsWith("/strong")) {
-      document.write(genStrong());
-    } else {
-      app.hidden = false;
-      showPassword("strong");
-    }
+    // Default generate a strong password on load
+    showPassword("strong");
   </script>
 </body>
 </html>
