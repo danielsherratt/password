@@ -93,6 +93,32 @@
     .modal .m-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
     .modal .m-btn.primary:hover{background:#1e40af}
 
+    .history-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height:320px;
+      overflow:auto;
+    }
+    .history-list li{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#f9fafb;
+      font-family:"SF Mono",Menlo,Consolas,monospace;
+      font-size:0.92rem;
+    }
+    .history-list li span{white-space:nowrap;}
+    .history-list .pwd{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;}
+    .history-list .time{color:var(--muted);font-size:0.85rem;text-align:right;}
+    .history-list .empty{font-family:inherit;font-style:italic;justify-content:center;color:var(--muted);}
+
     @media (max-width:460px){
       .title{font-size:1.05rem}
       .password-output{font-size:1rem}
@@ -108,6 +134,7 @@
       <button id="btnSimple" class="btn primary">🙂 Simple</button>
       <button id="btnStrong" class="btn">🛡️ Strong</button>
       <button id="btnApi" class="btn"><i class="fa-solid fa-link"></i> API</button>
+      <button id="btnHistory" class="btn"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
     </div>
 
     <div class="password-label" id="passwordLabel">Simple password</div>
@@ -131,6 +158,18 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     </div>
   </div>
 
+  <!-- History modal -->
+  <div id="historyOverlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="historyTitle">
+      <h3 id="historyTitle">Copied password history</h3>
+      <ul id="historyList" class="history-list" aria-live="polite"></ul>
+      <div class="m-controls">
+        <button id="clearHistory" class="m-btn"><i class="fa-solid fa-trash"></i> Clear</button>
+        <button id="closeHistory" class="m-btn primary"><i class="fa-solid fa-xmark"></i> Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const out = document.getElementById('passwordOutput');
     const copyBtn = document.getElementById('copyBtn');
@@ -138,6 +177,78 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     const apiCode = document.getElementById('apiCode');
     const copyApi = document.getElementById('copyApi');
     const closeApi = document.getElementById('closeApi');
+    const historyOverlay = document.getElementById('historyOverlay');
+    const historyList = document.getElementById('historyList');
+    const closeHistory = document.getElementById('closeHistory');
+    const clearHistory = document.getElementById('clearHistory');
+
+    const HISTORY_KEY = 'pwdCopyHistory';
+    const HISTORY_LIMIT = 50;
+    const nzFormatter = new Intl.DateTimeFormat('en-NZ', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Pacific/Auckland'
+    });
+
+    function readHistory(){
+      try{
+        const saved = localStorage.getItem(HISTORY_KEY);
+        return saved ? JSON.parse(saved) : [];
+      }catch{
+        return [];
+      }
+    }
+
+    function writeHistory(history){
+      try{
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, HISTORY_LIMIT)));
+      }catch{}
+    }
+
+    function recordHistory(password){
+      if(!password || password.trim()==='') return;
+      const history = readHistory();
+      history.unshift({pwd: password, ts: Date.now()});
+      writeHistory(history);
+    }
+
+    function formatTimestamp(ts){
+      return nzFormatter.format(new Date(ts));
+    }
+
+    function renderHistory(){
+      const history = readHistory();
+      historyList.innerHTML = '';
+      if(!history.length){
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = 'No copied passwords yet.';
+        historyList.appendChild(empty);
+        return;
+      }
+      history.forEach(entry => {
+        const li = document.createElement('li');
+        const pwd = document.createElement('span');
+        pwd.className = 'pwd';
+        pwd.textContent = entry.pwd;
+        const time = document.createElement('span');
+        time.className = 'time';
+        time.textContent = formatTimestamp(entry.ts);
+        li.appendChild(pwd);
+        li.appendChild(time);
+        historyList.appendChild(li);
+      });
+    }
+
+    function openOverlay(el){
+      el.style.display='flex';
+      el.setAttribute('aria-hidden','false');
+    }
+
+    function closeOverlay(el){
+      el.style.display='none';
+      el.setAttribute('aria-hidden','true');
+    }
 
     async function fetchPassword(type){
       try{
@@ -156,6 +267,7 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!text) return;
       try{
         await navigator.clipboard.writeText(text);
+        recordHistory(text);
         copyBtn.innerHTML='<i class="fa-solid fa-check"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
       }catch{
@@ -169,13 +281,18 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     document.getElementById('btnSimple').onclick=()=>showPassword('simple');
     document.getElementById('btnStrong').onclick=()=>showPassword('strong');
     document.getElementById('btnApi').onclick=()=>{
-      overlay.style.display='flex';
-      overlay.setAttribute('aria-hidden','false');
+      openOverlay(overlay);
       apiCode.focus();
     };
-    closeApi.onclick=()=>{
-      overlay.style.display='none';
-      overlay.setAttribute('aria-hidden','true');
+    closeApi.onclick=()=>closeOverlay(overlay);
+    document.getElementById('btnHistory').onclick=()=>{
+      renderHistory();
+      openOverlay(historyOverlay);
+    };
+    closeHistory.onclick=()=>closeOverlay(historyOverlay);
+    clearHistory.onclick=()=>{
+      writeHistory([]);
+      renderHistory();
     };
     copyApi.onclick=async()=>{
       const text=apiCode.textContent.trim();
@@ -189,12 +306,15 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       }
     };
     overlay.addEventListener('click',e=>{
-      if(e.target===overlay){overlay.style.display='none';overlay.setAttribute('aria-hidden','true');}
+      if(e.target===overlay){closeOverlay(overlay);}
+    });
+    historyOverlay.addEventListener('click',e=>{
+      if(e.target===historyOverlay){closeOverlay(historyOverlay);}
     });
     document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'&&overlay.style.display==='flex'){
-        overlay.style.display='none';
-        overlay.setAttribute('aria-hidden','true');
+      if(e.key==='Escape'){
+        if(overlay.style.display==='flex') closeOverlay(overlay);
+        if(historyOverlay.style.display==='flex') closeOverlay(historyOverlay);
       }
     });
 
