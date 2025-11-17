@@ -59,7 +59,7 @@
       white-space:nowrap;overflow-x:auto;transition:background .15s ease;
     }
     .password-output:hover{background:var(--accent-soft)}
-    .copy-btn{border:none;border-radius:999px;padding:6px 10px;background:var(--accent-soft);color:var(--accent);cursor:pointer}
+    .copy-btn{border:none;border-radius:999px;padding:6px 10px;background:var(--accent-soft);color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center}
 
     /* Modal */
     .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:60}
@@ -119,9 +119,62 @@
     .history-list .time{color:var(--muted);font-size:0.85rem;text-align:right;}
     .history-list .empty{font-family:inherit;font-style:italic;justify-content:center;color:var(--muted);}
 
-    @media (max-width:460px){
-      .title{font-size:1.05rem}
-      .password-output{font-size:1rem}
+    @media (max-width:600px){
+      body{
+        padding:16px;
+        align-items:flex-start;
+      }
+      .wrap{
+        padding:18px;
+        border-radius:14px;
+      }
+      .title{font-size:1.15rem;gap:6px;flex-wrap:wrap;}
+      .subtitle{font-size:0.9rem;}
+      .controls{
+        flex-direction:column;
+      }
+      .btn{
+        width:100%;
+        justify-content:center;
+      }
+      .password-box{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .password-output{
+        width:100%;
+        white-space:normal;
+        overflow-wrap:break-word;
+        word-break:break-word;
+        font-size:1rem;
+      }
+      .copy-btn{
+        width:100%;
+      }
+      .history-list li{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+      .history-list .pwd{
+        max-width:100%;
+        white-space:normal;
+      }
+      .history-list .time{
+        text-align:left;
+      }
+      .modal{
+        width:96%;
+        max-height:90vh;
+        overflow:auto;
+      }
+      .modal .m-controls{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .modal .m-btn{
+        justify-content:center;
+      }
     }
   </style>
 </head>
