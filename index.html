@@ -92,6 +92,25 @@
     }
     .modal .m-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
     .modal .m-btn.primary:hover{background:#1e40af}
+    .modal .m-btn.danger{background:#fee2e2;color:#991b1b;border-color:#fecdd3}
+    .modal .m-btn.danger:hover{background:#fecdd3}
+
+    .hidden{display:none !important;}
+
+    .confirm{
+      margin-top:10px;
+      padding:12px;
+      border:1px dashed var(--border);
+      border-radius:10px;
+      background:var(--accent-soft);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      color:var(--text);
+    }
+    .confirm strong{display:block;margin-bottom:4px;}
+    .confirm-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
 
     .history-list{
       list-style:none;
@@ -222,6 +241,16 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     <div class="modal" role="document" aria-labelledby="historyTitle">
       <h3 id="historyTitle">Copied password history</h3>
       <ul id="historyList" class="history-list" aria-live="polite"></ul>
+      <div id="clearConfirm" class="confirm hidden" role="alert" aria-live="assertive">
+        <div>
+          <strong>Are you sure?</strong>
+          <span>This will remove your copied password history from this device.</span>
+        </div>
+        <div class="confirm-actions">
+          <button id="confirmClear" class="m-btn danger"><i class="fa-solid fa-trash"></i> Yes, clear it</button>
+          <button id="cancelClear" class="m-btn"><i class="fa-solid fa-rotate-left"></i> Keep history</button>
+        </div>
+      </div>
       <div class="m-controls">
         <button id="clearHistory" class="m-btn"><i class="fa-solid fa-trash"></i> Clear</button>
         <button id="closeHistory" class="m-btn primary"><i class="fa-solid fa-xmark"></i> Close</button>
@@ -240,6 +269,9 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     const historyList = document.getElementById('historyList');
     const closeHistory = document.getElementById('closeHistory');
     const clearHistory = document.getElementById('clearHistory');
+    const clearConfirm = document.getElementById('clearConfirm');
+    const confirmClear = document.getElementById('confirmClear');
+    const cancelClear = document.getElementById('cancelClear');
 
     const HISTORY_KEY = 'pwdCopyHistory';
     const HISTORY_LIMIT = 50;
@@ -346,12 +378,26 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     closeApi.onclick=()=>closeOverlay(overlay);
     document.getElementById('btnHistory').onclick=()=>{
       renderHistory();
+      clearConfirm.classList.add('hidden');
       openOverlay(historyOverlay);
     };
-    closeHistory.onclick=()=>closeOverlay(historyOverlay);
+    closeHistory.onclick=()=>{
+      closeOverlay(historyOverlay);
+      clearConfirm.classList.add('hidden');
+    };
     clearHistory.onclick=()=>{
+      clearConfirm.classList.remove('hidden');
+      confirmClear.focus();
+    };
+    cancelClear.onclick=()=>{
+      clearConfirm.classList.add('hidden');
+      clearHistory.focus();
+    };
+    confirmClear.onclick=()=>{
       writeHistory([]);
       renderHistory();
+      clearConfirm.classList.add('hidden');
+      clearHistory.focus();
     };
     copyApi.onclick=async()=>{
       const text=apiCode.textContent.trim();
