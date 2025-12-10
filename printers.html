@@ -12,7 +12,6 @@
         margin: 0;
     }
 
-    /* HEADER — logo only */
     header {
         background: white;
         padding: 12px 20px;
@@ -28,16 +27,14 @@
         position: relative;
     }
 
-    /* TOP-RIGHT BUTTONS */
+    /* TOP-RIGHT DRIVER BUTTON */
     .top-actions {
         position: absolute;
         top: 20px;
         right: 20px;
-        display: flex;
-        gap: 10px;
     }
 
-    /* WHITE + GREEN BUTTONS */
+    /* WHITE + GREEN BUTTON STYLE */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -57,7 +54,7 @@
         transform: translateY(-2px);
     }
 
-    /* VIDEO ALWAYS VISIBLE */
+    /* VIDEO BOX */
     .video-box {
         width: 100%;
         height: 260px;
@@ -69,24 +66,26 @@
         color: #444;
         font-size: 18px;
         margin-bottom: 20px;
-        margin-top: 60px; /* ensures space below top-right buttons */
+        margin-top: 60px;
     }
 
-    /* WRITTEN INSTRUCTIONS STAND OUT */
+    /* SMALLER WRITTEN INSTRUCTIONS */
     details {
         border: 2px solid #74b59b;
         background: #f4faf7;
-        padding: 18px;
-        border-radius: 10px;
-        margin-bottom: 30px;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 25px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        font-size: 15px;
     }
     details summary {
         cursor: pointer;
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 700;
         color: #006644;
-        padding: 8px;
+        padding: 6px;
+        margin-bottom: 4px;
     }
 
     .section {
@@ -102,6 +101,7 @@
         color: #006644;
     }
 
+    /* TABLE STYLES */
     table {
         width: 100%;
         margin-top: 20px;
@@ -133,7 +133,7 @@
         border: 2px solid #ccc;
     }
 
-    /* COPY BUTTON (stays in same place) */
+    /* COPY ICON + TICK */
     .copy-wrapper {
         display: inline-flex;
         align-items: center;
@@ -164,53 +164,49 @@
 
 <div class="container">
 
-    <!-- ========== TOP-RIGHT BUTTONS ========== -->
+    <!-- TOP-RIGHT DRIVER BUTTON -->
     <div class="top-actions">
         <a id="downloadBtn" class="btn" href="#">
-            <i class="fa-solid fa-download"></i> Download Driver
-        </a>
-
-        <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
-            <i class="fa-solid fa-envelope"></i> Contact ITSupport
+            <i class="fa-solid fa-download"></i> Driver
         </a>
     </div>
 
-    <!-- ===== ALWAYS-VISIBLE VIDEO ===== -->
+    <!-- VIDEO ALWAYS VISIBLE -->
     <div class="video-box">Video coming soon…</div>
 
-    <!-- ===== WRITTEN INSTRUCTIONS ===== -->
+    <!-- WRITTEN INSTRUCTIONS (smaller version) -->
     <details>
         <summary>Written Instructions</summary>
 
-        <!-- WINDOWS -->
+        <!-- WINDOWS SECTION -->
         <div id="windowsSection" class="section" style="display:none;">
             <h2>Windows Setup</h2>
             <ol>
                 <li>Run the installer and accept the terms.</li>
                 <li>Select <strong>Wireless or Ethernet</strong>.</li>
-                <li>Wait for timeout → click OK when "printer can’t be found".</li>
+                <li>Wait for timeout → click OK.</li>
                 <li>Select <strong>Add printer manually</strong>.</li>
-                <li>Enter the printer IP from the list below.</li>
-                <li>Use the model in the <strong>Filter</strong> box.</li>
+                <li>Enter the printer IP.</li>
+                <li>Type the model in the <strong>Filter</strong> box.</li>
                 <li>Click <strong>Next</strong> twice.</li>
-                <li>Name it something simple.</li>
+                <li>Give the printer a simple name.</li>
             </ol>
         </div>
 
-        <!-- MAC -->
+        <!-- MAC SECTION -->
         <div id="macSection" class="section" style="display:none;">
             <h2>macOS Setup</h2>
             <ul>
-                <li>Select the <strong>LPD</strong> protocol.</li>
+                <li>Select <strong>LPD</strong> protocol.</li>
                 <li>Type <strong>ff</strong> in the driver field.</li>
-                <li>Select FujiFilm driver.</li>
+                <li>Choose FujiFilm driver.</li>
                 <li>Name the printer something simple.</li>
             </ul>
         </div>
 
     </details>
 
-    <!-- ===== PRINTER LIST ===== -->
+    <!-- PRINTER LIST -->
     <div class="section">
         <h2>Printer List</h2>
 
@@ -228,6 +224,12 @@
             <tbody id="printerBody"></tbody>
         </table>
 
+        <!-- ITSUPPORT BUTTON AT BOTTOM -->
+        <div style="text-align:center; margin-top:25px;">
+            <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
+                <i class="fa-solid fa-envelope"></i> ITSupport
+            </a>
+        </div>
     </div>
 
 </div>
@@ -277,13 +279,12 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Move Papercut to top
+// Papercut first
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-// Detect OS + set driver link
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
@@ -291,21 +292,19 @@ function detectOS() {
     return "unknown";
 }
 
+// Change Driver button based on OS
 function configureDownloadButton() {
     const os = detectOS();
-    const button = document.getElementById("downloadBtn");
+    const btn = document.getElementById("downloadBtn");
 
     if (os === "windows") {
-        button.href =
-            "https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe";
-        button.innerHTML = `<i class="fa-solid fa-download"></i> Download Windows Driver`;
+        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe";
+        btn.innerHTML = `<i class="fa-solid fa-download"></i> Driver`;
     } else if (os === "mac") {
-        button.href =
-            "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg";
-        button.innerHTML = `<i class="fa-solid fa-download"></i> Download macOS Driver`;
+        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg";
+        btn.innerHTML = `<i class="fa-solid fa-download"></i> Driver`;
     } else {
-        button.href = "#";
-        button.innerHTML = `<i class="fa-solid fa-download"></i> Download Driver`;
+        btn.href = "#";
     }
 }
 
@@ -315,15 +314,14 @@ function showInstructions() {
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-// Load printer table
+// Load table
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
 
     PRINTER_LIST.forEach(p => {
         const tr = document.createElement("tr");
-
-        let ipText = p.ip || "—";
+        const ipText = p.ip || "—";
 
         let copyHTML = "";
         if (p.ip && !p.ip.includes("Papercut")) {
@@ -341,14 +339,14 @@ function loadPrinters() {
             <td>${p.model}</td>
             <td>${ipText} ${copyHTML}</td>
         `;
+
         body.appendChild(tr);
     });
 
-    // COPY BEHAVIOUR
+    // Copy behaviour
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
-            const ip = this.dataset.ip;
-            navigator.clipboard.writeText(ip);
+            navigator.clipboard.writeText(this.dataset.ip);
 
             const tick = this.nextElementSibling;
 
@@ -363,7 +361,7 @@ function loadPrinters() {
     });
 }
 
-// SEARCH FUNCTION
+// Search filtering
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
