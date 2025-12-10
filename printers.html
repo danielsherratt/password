@@ -12,13 +12,15 @@
         margin: 0;
     }
 
-    /* HEADER */
+    /* HEADER — CENTERED */
     header {
         background: white;
         padding: 12px 20px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 15px;
+        gap: 8px;
+        text-align: center;
     }
     header img {
         height: 60px;
@@ -36,13 +38,7 @@
         position: relative;
     }
 
-    /* DRIVER BUTTON NOW SEPARATE */
-    .top-actions {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-    }
-
+    /* BUTTON STYLE */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -56,10 +52,28 @@
         cursor: pointer;
         transition: 0.2s ease;
         text-decoration: none;
+        white-space: nowrap;
     }
     .btn:hover {
         background: #e3f2ec;
         transform: translateY(-2px);
+    }
+
+    /* SEARCH + DRIVER BUTTON ROW */
+    .search-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        gap: 10px;
+    }
+
+    #searchBar {
+        flex: 1;
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 2px solid #ccc;
     }
 
     /* VIDEO BOX */
@@ -74,10 +88,10 @@
         color: #444;
         font-size: 18px;
         margin-bottom: 15px;
-        margin-top: 60px;
+        margin-top: 40px;
     }
 
-    /* INSTRUCTIONS (unchanged styling except smaller) */
+    /* INSTRUCTIONS */
     details {
         border: 2px solid #74b59b;
         background: #f4faf7;
@@ -108,16 +122,6 @@
         color: #006644;
     }
 
-    /* SEARCH BAR LEFT ALIGNED + WIDER */
-    #searchBar {
-        width: 70%;
-        padding: 10px;
-        border-radius: 6px;
-        margin-bottom: 15px;
-        border: 2px solid #ccc;
-        display: block;
-    }
-
     /* TABLE */
     table {
         width: 100%;
@@ -125,24 +129,21 @@
         border-collapse: collapse;
         background: white;
     }
-
     th, td {
         padding: 12px;
         border-bottom: 1px solid #eee;
         text-align: left;
     }
-
     th {
         background: #e3f2ec;
         color: #006644;
         font-weight: bold;
     }
-
     tr:hover {
         background: #f1f8f4;
     }
 
-    /* COPY + TICK */
+    /* COPY ICON */
     .copy-wrapper {
         display: inline-flex;
         align-items: center;
@@ -160,6 +161,7 @@
         font-size: 16px;
         display: none;
     }
+
 </style>
 </head>
 
@@ -171,13 +173,6 @@
 </header>
 
 <div class="container">
-
-    <!-- DRIVER BUTTON SEPARATED -->
-    <div class="top-actions">
-        <a id="downloadBtn" class="btn" href="#">
-            <i class="fa-solid fa-download"></i> Driver
-        </a>
-    </div>
 
     <!-- VIDEO -->
     <div class="video-box">Video coming soon…</div>
@@ -212,11 +207,17 @@
 
     </details>
 
-    <!-- PRINTER LIST -->
+    <!-- PRINTER LIST SECTION -->
     <div class="section">
         <h2>Printer List</h2>
 
-        <input id="searchBar" placeholder="Search by location or city…">
+        <!-- SEARCH + DRIVER BUTTON TOGETHER -->
+        <div class="search-row">
+            <input id="searchBar" placeholder="Search by location or city…">
+            <a id="downloadBtn" class="btn" href="#">
+                <i class="fa-solid fa-download"></i> Driver
+            </a>
+        </div>
 
         <table>
             <thead>
@@ -284,12 +285,12 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
+// Sort Papercut to top
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-// OS detection
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
@@ -297,7 +298,6 @@ function detectOS() {
     return "unknown";
 }
 
-// Driver button text
 function configureDownloadButton() {
     const os = detectOS();
     const btn = document.getElementById("downloadBtn");
@@ -314,14 +314,12 @@ function configureDownloadButton() {
     }
 }
 
-// Show Windows/Mac instructions
 function showInstructions() {
     const os = detectOS();
     if (os === "windows") document.getElementById("windowsSection").style.display = "block";
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-// Build printer rows
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
@@ -349,13 +347,11 @@ function loadPrinters() {
         body.appendChild(tr);
     });
 
-    // Copy behaviour
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
             navigator.clipboard.writeText(this.dataset.ip);
 
             const tick = this.nextElementSibling;
-
             this.style.display = "none";
             tick.style.display = "inline";
 
@@ -367,7 +363,6 @@ function loadPrinters() {
     });
 }
 
-// Search filter
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
@@ -375,7 +370,6 @@ document.getElementById("searchBar").addEventListener("keyup", function () {
     });
 });
 
-// INIT
 configureDownloadButton();
 showInstructions();
 loadPrinters();
