@@ -12,7 +12,7 @@
         margin: 0;
     }
 
-    /* HEADER (white background, only logo) */
+    /* HEADER — logo only */
     header {
         background: white;
         padding: 12px 20px;
@@ -40,7 +40,7 @@
         color: #006644;
     }
 
-    /* BUTTON STYLE (white buttons, green border + hover motion) */
+    /* BUTTONS — white with green border and hover motion */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -58,6 +58,28 @@
     .btn:hover {
         background: #e3f2ec;
         transform: translateY(-2px);
+    }
+
+    /* VIDEO always visible */
+    .video-box {
+        width: 100%;
+        height: 260px;
+        background: #ddd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    details summary {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        color: #006644;
+        margin-bottom: 10px;
     }
 
     table {
@@ -91,46 +113,19 @@
         border: 2px solid #ccc;
     }
 
+    /* COPY BUTTON ICON */
     .copy-btn {
         cursor: pointer;
         margin-left: 8px;
         color: #006644;
     }
 
-    .copy-msg {
+    /* Tick icon after copying */
+    .tick {
         display: none;
         color: green;
-        font-size: 12px;
-        margin-left: 5px;
+        margin-left: 6px;
     }
-
-    /* Video section */
-    details {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        margin-bottom: 25px;
-    }
-    details summary {
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        color: #006644;
-    }
-    .video-placeholder {
-        width: 100%;
-        height: 260px;
-        background: #ddd;
-        border-radius: 8px;
-        margin-top: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #444;
-        font-size: 18px;
-    }
-
 </style>
 </head>
 
@@ -142,49 +137,52 @@
 
 <div class="container">
 
-    <!-- ===== VIDEO INSTRUCTIONS ===== -->
+    <!-- ===== ALWAYS-VISIBLE VIDEO ===== -->
+    <div class="video-box">
+        Video coming soon…
+    </div>
+
+    <!-- ===== COLLAPSED WRITTEN INSTRUCTIONS ===== -->
     <details>
-        <summary>Video Instructions</summary>
-        <div class="video-placeholder">
-            Video coming soon…
+        <summary>Written Instructions</summary>
+
+        <!-- WINDOWS -->
+        <div id="windowsSection" class="section" style="display:none;">
+            <h2>Windows Setup</h2>
+
+            <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe">
+                <i class="fa-solid fa-download"></i> Download Windows Driver
+            </a>
+
+            <ol>
+                <li>Run the installer and accept the terms.</li>
+                <li>Select <strong>Wireless or Ethernet</strong>.</li>
+                <li>Wait for timeout → click OK when "printer can’t be found".</li>
+                <li>Select <strong>Add printer manually</strong>.</li>
+                <li>Enter the printer IP from the list below.</li>
+                <li>Type the model in the <strong>Filter</strong> box.</li>
+                <li>Click <strong>Next</strong> twice.</li>
+                <li>Use a simple friendly name.</li>
+            </ol>
         </div>
+
+        <!-- MAC -->
+        <div id="macSection" class="section" style="display:none;">
+            <h2>macOS Setup</h2>
+
+            <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg">
+                <i class="fa-solid fa-download"></i> Download macOS Driver
+            </a>
+
+            <ul>
+                <li>Select the <strong>LPD</strong> protocol.</li>
+                <li>Type <strong>ff</strong> in the driver field and select the FujiFilm driver.</li>
+                <li>Do not choose model-specific drivers.</li>
+                <li>Use a simple friendly name.</li>
+            </ul>
+        </div>
+
     </details>
-
-    <!-- ===== WINDOWS SECTION ===== -->
-    <div id="windowsSection" class="section" style="display:none;">
-        <h2>Windows Setup</h2>
-
-        <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe">
-            <i class="fa-solid fa-download"></i> Download Windows Driver
-        </a>
-
-        <ol>
-            <li>Run the installer and accept the terms.</li>
-            <li>Select <strong>Wireless or Ethernet</strong>.</li>
-            <li>Wait for timeout → click OK when "printer can’t be found".</li>
-            <li>Select <strong>Add printer manually</strong>.</li>
-            <li>Enter the printer IP from the list below.</li>
-            <li>Type the model (e.g. 3070) in the <strong>Filter</strong> box and select the model.</li>
-            <li>Click <strong>Next</strong> twice.</li>
-            <li>Use a simple friendly name.</li>
-        </ol>
-    </div>
-
-    <!-- ===== MAC SECTION ===== -->
-    <div id="macSection" class="section" style="display:none;">
-        <h2>macOS Setup</h2>
-
-        <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg">
-            <i class="fa-solid fa-download"></i> Download macOS Driver
-        </a>
-
-        <ul>
-            <li>Choose the <strong>LPD</strong> protocol.</li>
-            <li>Type <strong>ff</strong> in the driver field and select FujiFilm driver.</li>
-            <li>Do not choose model-specific drivers.</li>
-            <li>Use a simple friendly name.</li>
-        </ul>
-    </div>
 
     <!-- ===== PRINTER LIST ===== -->
     <div class="section">
@@ -258,13 +256,13 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Move Papercut printers to top
+// Papercut at top
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-// OS Detection
+// OS detection
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
@@ -272,13 +270,14 @@ function detectOS() {
     return "unknown";
 }
 
+// Show correct instructions
 function showInstructions() {
     const os = detectOS();
     if (os === "windows") document.getElementById("windowsSection").style.display = "block";
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-// Load Printer Table
+// Load printer table
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
@@ -287,34 +286,40 @@ function loadPrinters() {
         const tr = document.createElement("tr");
 
         let ipText = p.ip || "—";
-        let copyIcon =
-            p.ip && !p.ip.includes("Papercut")
-                ? `<i class="fa-solid fa-copy copy-btn" data-ip="${p.ip}"></i> <span class="copy-msg">Copied!</span>`
-                : "";
+
+        let copy = "";
+        if (p.ip && !p.ip.includes("Papercut")) {
+            copy = `
+                <i class="fa-solid fa-copy copy-btn" data-ip="${p.ip}"></i>
+                <i class="fa-solid fa-check tick"></i>
+            `;
+        }
 
         tr.innerHTML = `
             <td>${p.location}</td>
             <td>${p.city}</td>
             <td>${p.model}</td>
-            <td>${ipText} ${copyIcon}</td>
+            <td>${ipText} ${copy}</td>
         `;
+
         body.appendChild(tr);
     });
 
-    // Activate copy buttons
+    // Enable copy buttons
     document.querySelectorAll(".copy-btn").forEach(btn => {
         btn.addEventListener("click", function () {
             const ip = this.dataset.ip;
             navigator.clipboard.writeText(ip);
 
-            const msg = this.nextElementSibling;
-            msg.style.display = "inline";
-            setTimeout(() => (msg.style.display = "none"), 1200);
+            const tick = this.nextElementSibling;
+            tick.style.display = "inline";
+
+            setTimeout(() => tick.style.display = "none", 800);
         });
     });
 }
 
-// Search Filter
+// Search box
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
@@ -322,7 +327,7 @@ document.getElementById("searchBar").addEventListener("keyup", function () {
     });
 });
 
-// Init
+// INIT
 showInstructions();
 loadPrinters();
 </script>
