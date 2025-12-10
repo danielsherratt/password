@@ -72,7 +72,7 @@
         margin-top: 40px;
     }
 
-    /* STEP NUMBERS */
+    /* STEP NUMBER */
     .step-label {
         font-size: 28px;
         font-weight: 700;
@@ -82,13 +82,22 @@
         user-select: none;
     }
 
-    /* ROW FORMATS */
-    .driver-row {
+    /* SECTION CONTAINER */
+    .section {
+        background: white;
+        padding: 18px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-bottom: 30px;
+    }
+
+    /* HEADER INSIDE SECTION */
+    h2 {
+        margin-top: 0;
+        color: #006644;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        gap: 15px;
-        margin-bottom: 25px;
+        gap: 10px;
     }
 
     /* SEARCH BAR */
@@ -98,23 +107,6 @@
         border-radius: 6px;
         border: 2px solid #ccc;
         margin-bottom: 15px;
-    }
-
-    /* SECTIONS */
-    .section {
-        background: white;
-        padding: 18px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        margin-bottom: 30px;
-    }
-
-    h2 {
-        margin-top: 0;
-        color: #006644;
-        display: flex;
-        align-items: center;
-        gap: 10px;
     }
 
     /* TABLE */
@@ -173,14 +165,14 @@
         gap: 10px;
     }
 
-    /* Expand arrow indicator */
-    .expand-indicator {
-        margin-left: 8px;
-        transition: 0.2s ease;
-        font-size: 18px;
-        user-select: none;
+    /* Expand One */
+    .expand-icon {
+        font-size: 20px;
+        color: #006644;
+        transition: transform .2s ease;
+        margin-left: auto;
     }
-    details[open] .expand-indicator {
+    details[open] .expand-icon {
         transform: rotate(90deg);
     }
 </style>
@@ -197,14 +189,16 @@
 
     <div class="video-box">Video coming soon…</div>
 
-    <!-- STEP 1 -->
-    <div class="driver-row">
-        <span class="step-label">1</span>
-        <a id="downloadBtn" class="btn"><i class="fa-solid fa-download"></i> Driver</a>
-    </div>
-
-    <!-- STEP 2 -->
+    <!-- FULL SECTION WITH ALL STEPS -->
     <div class="section">
+
+        <!-- STEP 1 -->
+        <div class="driver-row">
+            <span class="step-label">1</span>
+            <a id="downloadBtn" class="btn"><i class="fa-solid fa-download"></i> Driver</a>
+        </div>
+
+        <!-- STEP 2 TITLE -->
         <h2><span class="step-label">2</span>Printer List</h2>
 
         <input id="searchBar" placeholder="Search by location or city…">
@@ -226,7 +220,7 @@
             <summary>
                 <span class="step-label">3</span>
                 More help
-                <span class="expand-indicator">▸</span>
+                <i class="fa-solid fa-circle-chevron-right expand-icon"></i>
             </summary>
 
             <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
@@ -252,23 +246,20 @@
                     <li>Name the printer something simple.</li>
                 </ul>
             </div>
-        </details>
 
-        <!-- STEP 4 -->
-        <div class="driver-row" style="margin-top:20px;">
-            <span class="step-label">4</span>
-            <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
-                <i class="fa-solid fa-envelope"></i> ITSupport
-            </a>
-        </div>
+            <div style="text-align:center; margin-top:15px;">
+                <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
+                    <i class="fa-solid fa-envelope"></i> ITSupport
+                </a>
+            </div>
+
+        </details>
 
     </div>
 </div>
 
 <script>
-/* ---------------------------
-   PRINTER DATA
----------------------------- */
+/* PRINTER DATA */
 let PRINTER_LIST = [
   { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
   { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
