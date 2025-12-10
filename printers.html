@@ -12,7 +12,7 @@
         margin: 0;
     }
 
-    /* HEADER — CENTERED */
+    /* HEADER */
     header {
         background: white;
         padding: 12px 20px;
@@ -37,7 +37,7 @@
         padding: 20px;
     }
 
-    /* BUTTON STYLE */
+    /* BUTTONS */
     .btn {
         display: inline-flex;
         align-items: center;
@@ -72,16 +72,17 @@
         margin-top: 40px;
     }
 
-    /* STEP LABEL */
+    /* STEP NUMBERS */
     .step-label {
         font-size: 28px;
         font-weight: 700;
         color: #006644;
         width: 35px;
         text-align: center;
+        user-select: none;
     }
 
-    /* DRIVER ROW */
+    /* ROW FORMATS */
     .driver-row {
         display: flex;
         align-items: center;
@@ -99,7 +100,7 @@
         margin-bottom: 15px;
     }
 
-    /* BOXES */
+    /* SECTIONS */
     .section {
         background: white;
         padding: 18px;
@@ -171,6 +172,17 @@
         align-items: center;
         gap: 10px;
     }
+
+    /* Expand arrow indicator */
+    .expand-indicator {
+        margin-left: 8px;
+        transition: 0.2s ease;
+        font-size: 18px;
+        user-select: none;
+    }
+    details[open] .expand-indicator {
+        transform: rotate(90deg);
+    }
 </style>
 </head>
 
@@ -209,9 +221,13 @@
             <tbody id="printerBody"></tbody>
         </table>
 
-        <!-- STEP 3: MORE HELP -->
+        <!-- STEP 3 - MORE HELP -->
         <details>
-            <summary><span class="step-label">3</span>More help</summary>
+            <summary>
+                <span class="step-label">3</span>
+                More help
+                <span class="expand-indicator">▸</span>
+            </summary>
 
             <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
                 <h2>Windows Setup</h2>
@@ -236,20 +252,22 @@
                     <li>Name the printer something simple.</li>
                 </ul>
             </div>
-
-            <div style="text-align:center; margin-top:15px;">
-                <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
-                    <i class="fa-solid fa-envelope"></i> ITSupport
-                </a>
-            </div>
         </details>
+
+        <!-- STEP 4 -->
+        <div class="driver-row" style="margin-top:20px;">
+            <span class="step-label">4</span>
+            <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
+                <i class="fa-solid fa-envelope"></i> ITSupport
+            </a>
+        </div>
 
     </div>
 </div>
 
 <script>
 /* ---------------------------
-   PRINTER LIST DATA
+   PRINTER DATA
 ---------------------------- */
 let PRINTER_LIST = [
   { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
@@ -294,7 +312,7 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Sort Papercut printers first
+/* Papercut printers first */
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
@@ -357,6 +375,7 @@ function loadPrinters() {
         body.appendChild(tr);
     });
 
+    /* Copy functionality */
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
             navigator.clipboard.writeText(this.dataset.ip);
@@ -373,6 +392,7 @@ function loadPrinters() {
     });
 }
 
+/* Search filter */
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
