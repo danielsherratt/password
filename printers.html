@@ -297,13 +297,14 @@ function configureDownloadButton() {
         btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe";
         btn.innerHTML = `<i class="fa-solid fa-download"></i> Windows Driver`;
     } else if (os === "mac") {
-        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg`;
+        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg";
         btn.innerHTML = `<i class="fa-solid fa-download"></i> macOS Driver`;
     } else {
         btn.href = "#";
         btn.innerHTML = `<i class="fa-solid fa-download"></i> Driver`;
     }
 }
+
 
 function showInstructions() {
     const os = detectOS();
