@@ -60,7 +60,7 @@
         transform: translateY(-2px);
     }
 
-    /* VIDEO always visible */
+    /* VIDEO ALWAYS VISIBLE */
     .video-box {
         width: 100%;
         height: 260px;
@@ -74,12 +74,21 @@
         margin-bottom: 15px;
     }
 
+    /* WRITTEN INSTRUCTIONS STAND OUT MORE */
+    details {
+        border: 2px solid #74b59b;
+        background: #f4faf7;
+        padding: 18px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
     details summary {
         cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 18px;
+        font-weight: 700;
         color: #006644;
-        margin-bottom: 10px;
+        padding: 8px;
     }
 
     table {
@@ -113,19 +122,29 @@
         border: 2px solid #ccc;
     }
 
-    /* COPY BUTTON ICON */
-    .copy-btn {
-        cursor: pointer;
+    /* COPY BUTTON ICON — stays in place */
+    .copy-wrapper {
+        display: inline-flex;
+        align-items: center;
+        width: 22px;
+        justify-content: center;
         margin-left: 8px;
-        color: #006644;
     }
 
-    /* Tick icon after copying */
-    .tick {
-        display: none;
-        color: green;
-        margin-left: 6px;
+    .copy-icon {
+        cursor: pointer;
+        color: #006644;
+        font-size: 16px;
+        transition: opacity 0.2s ease;
     }
+
+    .tick-icon {
+        color: green;
+        font-size: 16px;
+        display: none;
+        position: absolute;
+    }
+
 </style>
 </head>
 
@@ -137,12 +156,12 @@
 
 <div class="container">
 
-    <!-- ===== ALWAYS-VISIBLE VIDEO ===== -->
+    <!-- ===== VIDEO ALWAYS VISIBLE ===== -->
     <div class="video-box">
         Video coming soon…
     </div>
 
-    <!-- ===== COLLAPSED WRITTEN INSTRUCTIONS ===== -->
+    <!-- ===== WRITTEN INSTRUCTIONS (STANDOUT VERSION) ===== -->
     <details>
         <summary>Written Instructions</summary>
 
@@ -160,9 +179,9 @@
                 <li>Wait for timeout → click OK when "printer can’t be found".</li>
                 <li>Select <strong>Add printer manually</strong>.</li>
                 <li>Enter the printer IP from the list below.</li>
-                <li>Type the model in the <strong>Filter</strong> box.</li>
+                <li>Use the model code in the <strong>Filter</strong> box.</li>
                 <li>Click <strong>Next</strong> twice.</li>
-                <li>Use a simple friendly name.</li>
+                <li>Name it something simple.</li>
             </ol>
         </div>
 
@@ -175,10 +194,10 @@
             </a>
 
             <ul>
-                <li>Select the <strong>LPD</strong> protocol.</li>
-                <li>Type <strong>ff</strong> in the driver field and select the FujiFilm driver.</li>
-                <li>Do not choose model-specific drivers.</li>
-                <li>Use a simple friendly name.</li>
+                <li>Select <strong>LPD</strong> protocol.</li>
+                <li>Type <strong>ff</strong> in the driver field and choose FujiFilm.</li>
+                <li>Do not select model-specific drivers.</li>
+                <li>Name the printer something simple.</li>
             </ul>
         </div>
 
@@ -256,28 +275,26 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Papercut at top
+// Group Papercut at top
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-// OS detection
+// Detect OS
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
     if (p.includes("mac")) return "mac";
     return "unknown";
 }
-
-// Show correct instructions
 function showInstructions() {
     const os = detectOS();
     if (os === "windows") document.getElementById("windowsSection").style.display = "block";
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-// Load printer table
+// Load printers into table
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
@@ -287,11 +304,14 @@ function loadPrinters() {
 
         let ipText = p.ip || "—";
 
-        let copy = "";
+        // COPY ICON + TICK ICON (same position)
+        let copyHTML = "";
         if (p.ip && !p.ip.includes("Papercut")) {
-            copy = `
-                <i class="fa-solid fa-copy copy-btn" data-ip="${p.ip}"></i>
-                <i class="fa-solid fa-check tick"></i>
+            copyHTML = `
+                <span class="copy-wrapper">
+                    <i class="fa-solid fa-copy copy-icon" data-ip="${p.ip}"></i>
+                    <i class="fa-solid fa-check tick-icon"></i>
+                </span>
             `;
         }
 
@@ -299,27 +319,31 @@ function loadPrinters() {
             <td>${p.location}</td>
             <td>${p.city}</td>
             <td>${p.model}</td>
-            <td>${ipText} ${copy}</td>
+            <td>${ipText} ${copyHTML}</td>
         `;
-
         body.appendChild(tr);
     });
 
-    // Enable copy buttons
-    document.querySelectorAll(".copy-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
+    // COPY HANDLER
+    document.querySelectorAll(".copy-icon").forEach(icon => {
+        icon.addEventListener("click", function () {
             const ip = this.dataset.ip;
             navigator.clipboard.writeText(ip);
 
             const tick = this.nextElementSibling;
+
+            this.style.display = "none";
             tick.style.display = "inline";
 
-            setTimeout(() => tick.style.display = "none", 800);
+            setTimeout(() => {
+                tick.style.display = "none";
+                this.style.display = "inline";
+            }, 900);
         });
     });
 }
 
-// Search box
+// SEARCH
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
