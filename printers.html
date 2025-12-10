@@ -91,24 +91,6 @@
         margin-top: 40px;
     }
 
-    /* INSTRUCTIONS */
-    details {
-        border: 2px solid #74b59b;
-        background: #f4faf7;
-        padding: 10px;
-        border-radius: 8px;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        font-size: 14px;
-    }
-    details summary {
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 700;
-        color: #006644;
-        padding: 6px 2px;
-    }
-
     .section {
         background: white;
         padding: 18px;
@@ -125,7 +107,7 @@
     /* TABLE */
     table {
         width: 100%;
-        margin-top: 20px;
+       margin-top: 20px;
         border-collapse: collapse;
         background: white;
     }
@@ -162,6 +144,24 @@
         display: none;
     }
 
+    /* INSTRUCTIONS BOX (now at the bottom) */
+    details {
+        border: 2px solid #74b59b;
+        background: #f4faf7;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        font-size: 14px;
+    }
+    details summary {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        color: #006644;
+        padding: 6px 2px;
+    }
 </style>
 </head>
 
@@ -176,36 +176,6 @@
 
     <!-- VIDEO -->
     <div class="video-box">Video coming soon…</div>
-
-    <!-- INSTRUCTIONS -->
-    <details>
-        <summary>Instructions</summary>
-
-        <div id="windowsSection" class="section" style="display:none;">
-            <h2>Windows Setup</h2>
-            <ol>
-                <li>Run the installer and accept the terms.</li>
-                <li>Select <strong>Wireless or Ethernet</strong>.</li>
-                <li>Wait for timeout → click OK.</li>
-                <li>Select <strong>Add printer manually</strong>.</li>
-                <li>Enter the printer IP.</li>
-                <li>Search model in the <strong>Filter</strong>.</li>
-                <li>Click <strong>Next</strong> twice.</li>
-                <li>Name it something simple.</li>
-            </ol>
-        </div>
-
-        <div id="macSection" class="section" style="display:none;">
-            <h2>macOS Setup</h2>
-            <ul>
-                <li>Use the <strong>LPD</strong> protocol.</li>
-                <li>Type <strong>ff</strong> in the driver field.</li>
-                <li>Select FujiFilm driver.</li>
-                <li>Name the printer something simple.</li>
-            </ul>
-        </div>
-
-    </details>
 
     <!-- PRINTER LIST SECTION -->
     <div class="section">
@@ -231,7 +201,37 @@
             <tbody id="printerBody"></tbody>
         </table>
 
-        <div style="text-align:center; margin-top:25px;">
+        <!-- INSTRUCTIONS MOVED TO BOTTOM WITH IT SUPPORT -->
+        <details>
+            <summary>Instructions</summary>
+
+            <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
+                <h2>Windows Setup</h2>
+                <ol>
+                    <li>Run the installer and accept the terms.</li>
+                    <li>Select <strong>Wireless or Ethernet</strong>.</li>
+                    <li>Wait for timeout → click OK.</li>
+                    <li>Select <strong>Add printer manually</strong>.</li>
+                    <li>Enter the printer IP.</li>
+                    <li>Search model in the <strong>Filter</strong>.</li>
+                    <li>Click <strong>Next</strong> twice.</li>
+                    <li>Name it something simple.</li>
+                </ol>
+            </div>
+
+            <div id="macSection" class="section" style="display:none; margin-top:10px;">
+                <h2>macOS Setup</h2>
+                <ul>
+                    <li>Use the <strong>LPD</strong> protocol.</li>
+                    <li>Type <strong>ff</strong> in the driver field.</li>
+                    <li>Select FujiFilm driver.</li>
+                    <li>Name the printer something simple.</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- ITSupport at bottom -->
+        <div style="text-align:center; margin-top:10px;">
             <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
                 <i class="fa-solid fa-envelope"></i> ITSupport
             </a>
@@ -285,7 +285,7 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Sort Papercut to top
+// Sort Papercut first
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
@@ -350,11 +350,9 @@ function loadPrinters() {
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
             navigator.clipboard.writeText(this.dataset.ip);
-
             const tick = this.nextElementSibling;
             this.style.display = "none";
             tick.style.display = "inline";
-
             setTimeout(() => {
                 tick.style.display = "none";
                 this.style.display = "inline";
