@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ko Taku Reo • Printer Installer</title>
+<title>Ko Taku Reo • Printer Help</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -21,10 +21,10 @@
         justify-content: space-between;
     }
     header img {
-        height: 46px;
+        height: 44px;
     }
     .container {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 30px auto;
         padding: 20px;
     }
@@ -32,13 +32,30 @@
         margin-top: 0;
         color: #006644;
     }
+    .section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+    }
+    .btn {
+        display: inline-block;
+        padding: 10px 18px;
+        background: #006644;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-top: 8px;
+        cursor: pointer;
+    }
     table {
         width: 100%;
+        margin-top: 20px;
         border-collapse: collapse;
         background: white;
         border-radius: 8px;
         overflow: hidden;
-        margin-bottom: 20px;
     }
     th, td {
         padding: 12px;
@@ -47,22 +64,21 @@
     th {
         background: #e3f2ec;
         color: #006644;
-        border-bottom: 2px solid #ccc;
         font-weight: bold;
+        border-bottom: 2px solid #ccc;
     }
     tr:hover {
         background: #f1f8f4;
     }
-    .btn {
-        display: inline-block;
-        padding: 12px 20px;
-        background: #006644;
-        color: white;
-        text-decoration: none;
+    #searchBar {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ccc;
         border-radius: 6px;
-        margin: 6px 4px;
-        cursor: pointer;
-        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .papercut {
+        background: #fff4d1 !important;
     }
 </style>
 </head>
@@ -71,165 +87,196 @@
 
 <header>
     <img src="logo.png" alt="Ko Taku Reo Logo">
+    <strong>Printer Setup Help</strong>
 </header>
 
 <div class="container">
-    <h2>Select Printers to Install</h2>
 
-    <table id="printerTable">
-        <thead>
-            <tr>
-                <th>Select</th>
-                <th>School Name</th>
-                <th>Printer IP</th>
-                <th>Extra Step?</th>
-            </tr>
-        </thead>
-        <tbody>
+    <!-- WINDOWS SECTION -->
+    <div id="windowsSection" class="section" style="display:none;">
+        <h2>Windows Printer Setup</h2>
 
-            <!-- Sample Data — Replace as needed -->
-            <tr>
-                <td><input type="checkbox" class="printerChk"></td>
-                <td>Kelston Deaf Education Campus</td>
-                <td>10.20.14.25</td>
-                <td>No</td>
-            </tr>
+        <p><strong>First, check if you are using Papercut Hive:</strong></p>
+        <ul>
+            <li>If Papercut Hive is already set up and this is a new or re-imaged laptop, search for the Papercut invite email.</li>
+            <li>If the “Get started” link says it is expired, click <strong>New Invite</strong> and wait up to 10 minutes.</li>
+            <li>If you are not using Papercut Hive, choose your school or site from the list below.</li>
+        </ul>
 
-            <tr>
-                <td><input type="checkbox" class="printerChk"></td>
-                <td>Christchurch Campus</td>
-                <td>10.50.6.44</td>
-                <td>Yes</td>
-            </tr>
+        <h3>Install FujiFilm Driver (Windows)</h3>
+        <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe">
+            Download FujiFilm Windows Driver
+        </a>
 
-            <tr>
-                <td><input type="checkbox" class="printerChk"></td>
-                <td>Wellington Resource Centre</td>
-                <td>10.40.22.15</td>
-                <td>No</td>
-            </tr>
+        <p><strong>Installation Steps:</strong></p>
+        <ol>
+            <li>Run the installer and accept the terms.</li>
+            <li>Select <strong>Wireless or Ethernet</strong> connection.</li>
+            <li>Wait for timeout → click OK when "printer can’t be found".</li>
+            <li>Choose <strong>Add printer manually</strong>.</li>
+            <li>Enter the printer IP (from the list below).</li>
+            <li>In the <strong>Filter</strong> box, type the model (e.g. 3070) and select the correct FujiFilm model.</li>
+            <li>Click <strong>Next</strong> twice.</li>
+            <li>Give the printer a simple name (avoid model codes).</li>
+        </ol>
+    </div>
 
-            <tr>
-                <td><input type="checkbox" class="printerChk"></td>
-                <td>Palmerston North Resource Centre</td>
-                <td>10.41.33.77</td>
-                <td>No</td>
-            </tr>
+    <!-- MAC SECTION -->
+    <div id="macSection" class="section" style="display:none;">
+        <h2>macOS Printer Setup</h2>
 
-            <tr>
-                <td><input type="checkbox" class="printerChk"></td>
-                <td>Dunedin Resource Centre</td>
-                <td>10.70.16.89</td>
-                <td>Yes</td>
-            </tr>
+        <h3>Install FujiFilm Driver (macOS)</h3>
+        <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg">
+            Download FujiFilm macOS Driver
+        </a>
 
-        </tbody>
-    </table>
+        <p><strong>When adding the printer in System Settings:</strong></p>
+        <ul>
+            <li>Choose the <strong>LPD</strong> protocol.</li>
+            <li>For <strong>Driver</strong>, type “ff” and select the FujiFilm driver.</li>
+            <li>Do not select a model-specific driver.</li>
+            <li>Use a simple friendly printer name.</li>
+        </ul>
+    </div>
 
-    <button class="btn" onclick="generateInstaller()">Get Installer</button>
+    <!-- SHOW ALL BUTTON -->
+    <button id="showAllBtn" class="btn" style="display:none; margin-bottom:20px;">
+        Show all instructions
+    </button>
+
+    <!-- PRINTER LIST -->
+    <div class="section">
+        <h2>Printer List</h2>
+        <input id="searchBar" placeholder="Search by location or city…">
+
+        <table id="printerTable">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>City</th>
+                    <th>Model</th>
+                    <th>IP / Setup Type</th>
+                </tr>
+            </thead>
+            <tbody id="printerBody"></tbody>
+        </table>
+    </div>
+
 </div>
 
 <script>
-// ---------- Detect OS ----------
+// ---------------- PRINTER DATA ----------------
+const PRINTER_LIST = [
+  { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
+  { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
+  { location: "Tutors", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
+  { location: "Admn", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
+  { location: "Assistive Technology", city: "Sumner", model: "C3070", ip: "" },
+  { location: "Hillmorton", city: "Christchurch", model: "C3070", ip: "172.16.100.102" },
+  { location: "Kendal Ave", city: "Christchurch", model: "C3070", ip: "10.2.1.7" },
+  { location: "Pedagogy / Senior Leaders", city: "Sumner", model: "HP", ip: "10.59.114.76" },
+  { location: "Salsbury", city: "Nelson", model: "C3750", ip: "192.168.116.98" },
+  { location: "Ascot", city: "Invercargil", model: "C3070", ip: "10.144.240.200" },
+  { location: "Awapuni", city: "Palmerston North", model: "C250i", ip: "192.168.20.195" },
+  { location: "Titahi Bay", city: "Wellington", model: "C3070", ip: "192.168.1.220" },
+  { location: "Reception", city: "Auckland", model: "C3070", ip: "10.1.1.33" },
+  { location: "Hot Desk", city: "Auckland", model: "C3070", ip: "10.1.1.31" },
+  { location: "Media Centre", city: "Auckland", model: "C3070", ip: "10.1.1.32" },
+  { location: "Anton", city: "South Auckland", model: "C3070", ip: "172.24.128.3" },
+  { location: "Oteha Valley", city: "Auckland", model: "C3070", ip: "10.78.101.253" },
+  { location: "Hagley College", city: "Christchurch", model: "C3070", ip: "10.57.178.28" },
+  { location: "Kelston Primary", city: "Auckland", model: "C3070", ip: "172.16.10.200" },
+  { location: "Kelston Intermediate", city: "Auckland", model: "C3070", ip: "172.16.11.111" },
+  { location: "Kelston Girls", city: "Auckland", model: "C3070", ip: "10.15.0.40" },
+  { location: "Ormiston Primary", city: "Auckland", model: "C3070", ip: "10.0.61.1" },
+  { location: "Ormiston Junior", city: "Auckland", model: "C3070", ip: "10.44.1.242" },
+  { location: "Ormiston Senior", city: "Auckland", model: "C3070", ip: "10.10.204.248" },
+  { location: "Pukekohe North", city: "South Auckland", model: "C3070", ip: "192.168.3.193" },
+  { location: "Whakatane", city: "Whakatane", model: "C3070", ip: "Papercut" },
+  { location: "Onepoto Primary", city: "Auckland", model: "C3070", ip: "10.18.144.4" },
+  { location: "Hamilton", city: "Hamilton", model: "C3070", ip: "192.168.0.235" },
+  { location: "Tauranga", city: "Tauranga", model: "C3070", ip: "10.0.100.238" },
+  { location: "Rotorua Office", city: "Rotorua", model: "C3070", ip: "10.20.30.214" },
+  { location: "Edgecoumbe", city: "Northland", model: "C3070", ip: "192.168.1.200" },
+  { location: "Tikipungi High School", city: "Northland", model: "C3070", ip: "10.0.0.180" },
+  { location: "OceanView", city: "Dunedin", model: "C3070", ip: "10.67.96.6" },
+  { location: "Merrilands Schol", city: "New Plymouth", model: "ApeosPort VII C3321", ip: "10.155.18.220" },
+  { location: "Ginny Printer", city: "Sumner", model: "Brother", ip: "10.59.122.170" },
+  { location: "TImaru SRC office", city: "Timaru", model: "C3070", ip: "10.67.96.169:80" },
+  { location: "Waipahihi School", city: "Taupō", model: "C3070", ip: "192.168.100.249" },
+  { location: "Waipahihi School", city: "Taupō", model: "C3070", ip: "192.168.102.3" },
+  { location: "Marewa School", city: "Napier", model: "C3070", ip: "192.168.1.201" },
+  { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
+];
+
+// ---------------- OS Detection ----------------
 function detectOS() {
-    const platform = navigator.platform.toLowerCase();
-    const ua = navigator.userAgent.toLowerCase();
-
-    if (platform.includes("mac")) return "mac";
-    if (platform.includes("win")) return "windows";
-    if (ua.includes("mac")) return "mac";
-    if (ua.includes("windows")) return "windows";
-
+    const p = navigator.platform.toLowerCase();
+    if (p.includes("win")) return "windows";
+    if (p.includes("mac")) return "mac";
     return "unknown";
 }
 
-// ---------- Get selected printers ----------
-function getSelectedPrinters() {
-    const rows = document.querySelectorAll("#printerTable tbody tr");
-    const printers = [];
+function showCorrectSection() {
+    const os = detectOS();
+    const win = document.getElementById("windowsSection");
+    const mac = document.getElementById("macSection");
+    const btn = document.getElementById("showAllBtn");
+
+    if (os === "windows") {
+        win.style.display = "block";
+        btn.style.display = "block";
+    } else if (os === "mac") {
+        mac.style.display = "block";
+        btn.style.display = "block";
+    } else {
+        // Unknown OS - show both
+        win.style.display = "block";
+        mac.style.display = "block";
+    }
+}
+
+document.getElementById("showAllBtn").onclick = () => {
+    document.getElementById("windowsSection").style.display = "block";
+    document.getElementById("macSection").style.display = "block";
+};
+
+// ---------------- Printer List Rendering ----------------
+function loadPrinters() {
+    const body = document.getElementById("printerBody");
+    body.innerHTML = "";
+
+    PRINTER_LIST.forEach(p => {
+        const row = document.createElement("tr");
+
+        if (p.ip.toLowerCase().includes("papercut")) {
+            row.classList.add("papercut");
+        }
+
+        row.innerHTML = `
+            <td>${p.location}</td>
+            <td>${p.city}</td>
+            <td>${p.model}</td>
+            <td>${p.ip || "—"}</td>
+        `;
+        body.appendChild(row);
+    });
+}
+
+// ---------------- Search Filter ----------------
+document.getElementById("searchBar").addEventListener("keyup", function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#printerBody tr");
 
     rows.forEach(row => {
-        if (row.querySelector(".printerChk").checked) {
-            printers.push({
-                name: row.children[1].textContent.trim(),
-                ip: row.children[2].textContent.trim()
-            });
-        }
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
     });
+});
 
-    return printers;
-}
-
-// ---------- Build macOS .command ----------
-function buildMacCommand(printers) {
-    let script = "#!/bin/bash\n\n";
-    script += 'echo "Installing selected Ko Taku Reo printers..."\n\n';
-
-    printers.forEach(p => {
-        script += `echo "Installing ${p.name}"\n`;
-        script += `lpadmin -p "${p.name}" -E -v "lpd://${p.ip}" -m everywhere\n\n`;
-    });
-
-    script += 'echo "Done!"\n';
-    return script;
-}
-
-// ---------- Build Windows .cmd (PowerShell inside) ----------
-function buildWindowsCMD(printers) {
-    let ps = "";
-
-    printers.forEach(p => {
-        ps += `Write-Host "Installing ${p.name}"\n`;
-        ps += `if (-not (Get-PrinterPort -Name '${p.ip}' -ErrorAction SilentlyContinue)) {\n`;
-        ps += `  Add-PrinterPort -Name '${p.ip}' -PrinterHostAddress '${p.ip}'\n}\n`;
-        ps += `Add-Printer -Name '${p.name}' -DriverName 'Fuji Xerox ApeosPort-V PS' -PortName '${p.ip}'\n\n`;
-    });
-
-    let cmd =
-`@echo off
-:: Ko Taku Reo embedded PowerShell printer installer
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-"$ps = @'
-${ps}
-'@; Invoke-Expression $ps"
-
-echo Done.
-pause
-`;
-
-    return cmd;
-}
-
-// ---------- Generate file + download ----------
-function generateInstaller() {
-    const printers = getSelectedPrinters();
-    if (printers.length === 0) {
-        alert("Please select at least one printer.");
-        return;
-    }
-
-    const os = detectOS();
-    let fileContent = "";
-    let fileName = "";
-
-    if (os === "mac") {
-        fileContent = buildMacCommand(printers);
-        fileName = "install-printers.command";
-    } else if (os === "windows") {
-        fileContent = buildWindowsCMD(printers);
-        fileName = "install-printers.cmd";
-    } else {
-        alert("Unsupported OS. Please use macOS or Windows.");
-        return;
-    }
-
-    const blob = new Blob([fileContent], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-}
+// ---------------- INIT ----------------
+loadPrinters();
+showCorrectSection();
 </script>
 
 </body>
