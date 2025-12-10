@@ -11,22 +11,22 @@
         background: #f5f6f7;
         margin: 0;
     }
+
+    /* HEADER (white background, only logo) */
     header {
-        background: #006644;
+        background: white;
         padding: 12px 20px;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 16px;
     }
     header img {
         height: 44px;
     }
+
     .container {
         max-width: 1200px;
-        margin: 30px auto;
+        margin: 20px auto;
         padding: 20px;
     }
+
     .section {
         background: white;
         padding: 20px;
@@ -34,37 +34,55 @@
         border: 1px solid #ddd;
         margin-bottom: 30px;
     }
+
     h2 {
         margin-top: 0;
         color: #006644;
     }
+
+    /* BUTTON STYLE (white buttons, green border + hover motion) */
     .btn {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         padding: 10px 18px;
-        background: #006644;
-        color: white;
+        background: white;
+        color: #006644;
+        border: 2px solid #006644;
         border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
         text-decoration: none;
-        margin: 5px 0;
     }
+    .btn:hover {
+        background: #e3f2ec;
+        transform: translateY(-2px);
+    }
+
     table {
         width: 100%;
         margin-top: 20px;
         border-collapse: collapse;
         background: white;
     }
+
     th, td {
         padding: 12px;
         border-bottom: 1px solid #eee;
+        text-align: left;
     }
+
     th {
         background: #e3f2ec;
         color: #006644;
         font-weight: bold;
     }
+
     tr:hover {
         background: #f1f8f4;
     }
+
     #searchBar {
         width: 100%;
         padding: 10px;
@@ -72,10 +90,47 @@
         margin-bottom: 15px;
         border: 2px solid #ccc;
     }
-    .papercut {
-        background: #fff4d1;
-        font-weight: bold;
+
+    .copy-btn {
+        cursor: pointer;
+        margin-left: 8px;
+        color: #006644;
     }
+
+    .copy-msg {
+        display: none;
+        color: green;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+
+    /* Video section */
+    details {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-bottom: 25px;
+    }
+    details summary {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        color: #006644;
+    }
+    .video-placeholder {
+        width: 100%;
+        height: 260px;
+        background: #ddd;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-size: 18px;
+    }
+
 </style>
 </head>
 
@@ -83,46 +138,51 @@
 
 <header>
     <img src="logo.png" alt="Ko Taku Reo Logo">
-    <strong>Printer Setup Help</strong>
 </header>
 
 <div class="container">
 
-    <!-- ===== WINDOWS INSTRUCTIONS ===== -->
-    <div id="windowsSection" class="section" style="display:none;">
-        <h2>Windows Printer Setup</h2>
+    <!-- ===== VIDEO INSTRUCTIONS ===== -->
+    <details>
+        <summary>Video Instructions</summary>
+        <div class="video-placeholder">
+            Video coming soon…
+        </div>
+    </details>
 
-        <h3>Install FujiFilm Driver (Windows)</h3>
+    <!-- ===== WINDOWS SECTION ===== -->
+    <div id="windowsSection" class="section" style="display:none;">
+        <h2>Windows Setup</h2>
+
         <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe">
-            Download FujiFilm Windows Driver
+            <i class="fa-solid fa-download"></i> Download Windows Driver
         </a>
 
         <ol>
             <li>Run the installer and accept the terms.</li>
-            <li>Select <strong>Wireless or Ethernet</strong> connection.</li>
+            <li>Select <strong>Wireless or Ethernet</strong>.</li>
             <li>Wait for timeout → click OK when "printer can’t be found".</li>
             <li>Select <strong>Add printer manually</strong>.</li>
             <li>Enter the printer IP from the list below.</li>
-            <li>Type the model (e.g. 3070) into the <strong>Filter</strong> box and select your model.</li>
+            <li>Type the model (e.g. 3070) in the <strong>Filter</strong> box and select the model.</li>
             <li>Click <strong>Next</strong> twice.</li>
-            <li>Name the printer something simple (avoid model codes).</li>
+            <li>Use a simple friendly name.</li>
         </ol>
     </div>
 
-    <!-- ===== MAC INSTRUCTIONS ===== -->
+    <!-- ===== MAC SECTION ===== -->
     <div id="macSection" class="section" style="display:none;">
-        <h2>macOS Printer Setup</h2>
+        <h2>macOS Setup</h2>
 
-        <h3>Install FujiFilm Driver (macOS)</h3>
         <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg">
-            Download FujiFilm macOS Driver
+            <i class="fa-solid fa-download"></i> Download macOS Driver
         </a>
 
         <ul>
-            <li>When adding the printer, select the <strong>LPD</strong> protocol.</li>
-            <li>In the driver field, type <strong>ff</strong> and choose the FujiFilm driver.</li>
-            <li>Do <strong>not</strong> select a model-specific driver.</li>
-            <li>Use a simple friendly printer name.</li>
+            <li>Choose the <strong>LPD</strong> protocol.</li>
+            <li>Type <strong>ff</strong> in the driver field and select FujiFilm driver.</li>
+            <li>Do not choose model-specific drivers.</li>
+            <li>Use a simple friendly name.</li>
         </ul>
     </div>
 
@@ -143,6 +203,12 @@
             </thead>
             <tbody id="printerBody"></tbody>
         </table>
+
+        <div style="text-align:center; margin-top:25px;">
+            <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
+                <i class="fa-solid fa-envelope"></i> Contact ITSupport
+            </a>
+        </div>
     </div>
 
 </div>
@@ -192,13 +258,13 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// GROUP PAPERCUT PRINTERS FIRST
+// Move Papercut printers to top
 PRINTER_LIST = [
-  ...PRINTER_LIST.filter(p => p.ip.toLowerCase().includes("papercut")),
-  ...PRINTER_LIST.filter(p => !p.ip.toLowerCase().includes("papercut"))
+    ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
+    ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-// ---------------- OS Detection ----------------
+// OS Detection
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
@@ -212,34 +278,51 @@ function showInstructions() {
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-// ---------------- Load Table ----------------
+// Load Printer Table
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
 
     PRINTER_LIST.forEach(p => {
         const tr = document.createElement("tr");
-        if (p.ip.toLowerCase().includes("papercut")) tr.classList.add("papercut");
+
+        let ipText = p.ip || "—";
+        let copyIcon =
+            p.ip && !p.ip.includes("Papercut")
+                ? `<i class="fa-solid fa-copy copy-btn" data-ip="${p.ip}"></i> <span class="copy-msg">Copied!</span>`
+                : "";
 
         tr.innerHTML = `
             <td>${p.location}</td>
             <td>${p.city}</td>
             <td>${p.model}</td>
-            <td>${p.ip || "—"}</td>
+            <td>${ipText} ${copyIcon}</td>
         `;
         body.appendChild(tr);
     });
+
+    // Activate copy buttons
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const ip = this.dataset.ip;
+            navigator.clipboard.writeText(ip);
+
+            const msg = this.nextElementSibling;
+            msg.style.display = "inline";
+            setTimeout(() => (msg.style.display = "none"), 1200);
+        });
+    });
 }
 
-// ---------------- Search Filter ----------------
+// Search Filter
 document.getElementById("searchBar").addEventListener("keyup", function () {
-    const text = this.value.toLowerCase();
+    const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(text) ? "" : "none";
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
     });
 });
 
-// ---------------- INIT ----------------
+// Init
 showInstructions();
 loadPrinters();
 </script>
