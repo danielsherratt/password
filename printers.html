@@ -51,7 +51,6 @@
         cursor: pointer;
         transition: 0.2s ease;
         text-decoration: none;
-        white-space: nowrap;
     }
     .btn:hover {
         background: #e3f2ec;
@@ -73,7 +72,16 @@
         margin-top: 40px;
     }
 
-    /* LABEL + DRIVER BUTTON ROW */
+    /* STEP LABEL */
+    .step-label {
+        font-size: 28px;
+        font-weight: 700;
+        color: #006644;
+        width: 35px;
+        text-align: center;
+    }
+
+    /* DRIVER ROW */
     .driver-row {
         display: flex;
         align-items: center;
@@ -81,46 +89,17 @@
         gap: 15px;
         margin-bottom: 25px;
     }
-    .step-label {
-        font-size: 28px;
-        font-weight: 700;
-        color: #006644;
-    }
 
-    /* SEARCH + DRIVER BUTTON ROW */
-    .search-row {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 15px;
-        gap: 10px;
-    }
-
+    /* SEARCH BAR */
     #searchBar {
         width: 70%;
         padding: 10px;
         border-radius: 6px;
         border: 2px solid #ccc;
+        margin-bottom: 15px;
     }
 
-    /* INSTRUCTIONS AT BOTTOM */
-    details {
-        border: 2px solid #74b59b;
-        background: #f4faf7;
-        padding: 10px;
-        border-radius: 8px;
-        margin-top: 30px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        font-size: 14px;
-    }
-    details summary {
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 700;
-        color: #006644;
-        padding: 6px 2px;
-    }
-
+    /* BOXES */
     .section {
         background: white;
         padding: 18px;
@@ -132,6 +111,9 @@
     h2 {
         margin-top: 0;
         color: #006644;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     /* TABLE */
@@ -159,19 +141,35 @@
     .copy-wrapper {
         display: inline-flex;
         align-items: center;
-        width: 22px;
-        justify-content: center;
         margin-left: 8px;
     }
     .copy-icon {
         cursor: pointer;
         color: #006644;
-        font-size: 16px;
     }
     .tick-icon {
         color: green;
-        font-size: 16px;
         display: none;
+    }
+
+    /* MORE HELP */
+    details {
+        border: 2px solid #74b59b;
+        background: #f4faf7;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    details summary {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 700;
+        color: #006644;
+        padding: 6px 2px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 </style>
 </head>
@@ -187,21 +185,17 @@
 
     <div class="video-box">Video coming soon…</div>
 
-    <!-- STEP 1: DRIVER BUTTON -->
+    <!-- STEP 1 -->
     <div class="driver-row">
         <span class="step-label">1</span>
-        <a id="downloadBtn" class="btn">
-            <i class="fa-solid fa-download"></i> Driver
-        </a>
+        <a id="downloadBtn" class="btn"><i class="fa-solid fa-download"></i> Driver</a>
     </div>
 
-    <!-- STEP 2: PRINTER LIST -->
+    <!-- STEP 2 -->
     <div class="section">
-        <h2><span class="step-label">2</span> Printer List</h2>
+        <h2><span class="step-label">2</span>Printer List</h2>
 
-        <div class="search-row">
-            <input id="searchBar" placeholder="Search by location or city…">
-        </div>
+        <input id="searchBar" placeholder="Search by location or city…">
 
         <table>
             <thead>
@@ -209,15 +203,15 @@
                     <th>Location</th>
                     <th>City</th>
                     <th>Model</th>
-                    <th>IP / Setup Type</th>
+                    <th>IP / Setup</th>
                 </tr>
             </thead>
             <tbody id="printerBody"></tbody>
         </table>
 
-        <!-- INSTRUCTIONS + IT SUPPORT -->
+        <!-- STEP 3: MORE HELP -->
         <details>
-            <summary>Instructions</summary>
+            <summary><span class="step-label">3</span>More help</summary>
 
             <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
                 <h2>Windows Setup</h2>
@@ -248,14 +242,15 @@
                     <i class="fa-solid fa-envelope"></i> ITSupport
                 </a>
             </div>
-
         </details>
 
     </div>
 </div>
 
 <script>
-// PRINTER DATA
+/* ---------------------------
+   PRINTER LIST DATA
+---------------------------- */
 let PRINTER_LIST = [
   { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
   { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
@@ -299,7 +294,7 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Sort Papercut first
+// Sort Papercut printers first
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
@@ -320,7 +315,7 @@ function configureDownloadButton() {
         btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe";
         btn.innerHTML = `<i class="fa-solid fa-download"></i> Windows Driver`;
     } else if (os === "mac") {
-        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg`;
+        btn.href = "https://support-fb.fujifilm.com/driver_downloads/ffmacprnstd2504am110iml.dmg";
         btn.innerHTML = `<i class="fa-solid fa-download"></i> macOS Driver`;
     } else {
         btn.href = "#";
@@ -340,6 +335,7 @@ function loadPrinters() {
 
     PRINTER_LIST.forEach(p => {
         const tr = document.createElement("tr");
+
         const ipText = p.ip || "—";
 
         let copyHTML = "";
@@ -348,8 +344,7 @@ function loadPrinters() {
                 <span class="copy-wrapper">
                     <i class="fa-solid fa-copy copy-icon" data-ip="${p.ip}"></i>
                     <i class="fa-solid fa-check tick-icon"></i>
-                </span>
-            `;
+                </span>`;
         }
 
         tr.innerHTML = `
@@ -358,15 +353,18 @@ function loadPrinters() {
             <td>${p.model}</td>
             <td>${ipText} ${copyHTML}</td>
         `;
+
         body.appendChild(tr);
     });
 
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
             navigator.clipboard.writeText(this.dataset.ip);
+
             const tick = this.nextElementSibling;
             this.style.display = "none";
             tick.style.display = "inline";
+
             setTimeout(() => {
                 tick.style.display = "none";
                 this.style.display = "inline";
