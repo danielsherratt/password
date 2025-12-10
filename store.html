@@ -1,192 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>New Era Store</title>
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f4f4;
-    }
+  <meta charset="UTF-8">
+  <title>New Era — Web Store</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background: #f4f4f4; }
+    header { background: #002c5f; color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; }
+    header .logo { font-size: 24px; font-weight: bold; }
+    header .cart-btn { cursor: pointer; background: #fff; color: #002c5f; padding: 8px 12px; border-radius: 5px; border: none; }
+    .store-container { max-width: 1100px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 20px; }
+    .product { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+    .product img { width: 100%; max-height: 150px; object-fit: contain; margin-bottom: 10px; }
+    .product-title { font-weight: bold; margin-bottom: 10px; }
+    .price { color: #002c5f; font-weight: bold; margin-bottom: 10px; }
+    .qty-box { width: 60px; padding: 5px; margin-bottom: 10px; }
+    button { background: #002c5f; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    button:hover { background: #004080; }
 
-    header {
-        background: #00625f;
-        color: white;
-        padding: 15px 20px;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
-    .store-container {
-        max-width: 1100px;
-        margin: 30px auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 20px;
-    }
-
-    .product {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-
-    .product img {
-        width: 100%;
-        max-height: 150px;
-        object-fit: contain;
-        margin-bottom: 10px;
-    }
-
-    .product-title {
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-
-    .qty-box {
-        width: 60px;
-        padding: 5px;
-        margin-bottom: 10px;
-    }
-
-    button {
-        background: #00625f;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    button:hover {
-        background: #004d4a;
-    }
-
-    /* Popup */
-    #cartPopup {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .popup-box {
-        background: white;
-        width: 400px;
-        padding: 25px;
-        border-radius: 10px;
-    }
-
-    .popup-title {
-        font-size: 20px;
-        margin-bottom: 15px;
-        font-weight: bold;
-        color: #00625f;
-    }
-
-    input[type="text"], input[type="number"] {
-        width: 100%;
-        padding: 8px;
-        margin: 6px 0 12px 0;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .popup-buttons {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .close-btn {
-        background: #ccc;
-    }
-</style>
+    /* Cart dropdown/popup area */
+    #cartSidebar { position: fixed; top: 0; right: -350px; width: 350px; height: 100%; background: #fff; box-shadow: -2px 0 5px rgba(0,0,0,0.2); transition: right 0.3s ease-in-out; padding: 20px; overflow-y: auto; }
+    #cartSidebar.open { right: 0; }
+    #cartSidebar h2 { margin-top: 0; color: #002c5f; }
+    .cart-item { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    .cart-item span { display: block; }
+    .checkout-btn { background: #002c5f; color: white; width: 100%; padding: 12px; border: none; border-radius: 5px; margin-top: 15px; font-size: 16px; }
+  </style>
 </head>
 <body>
 
-<header>New Era – Web Store</header>
+<header>
+  <div class="logo">New Era Store</div>
+  <button class="cart-btn" onclick="toggleCart()">Cart (<span id="cartCount">0</span>)</button>
+</header>
 
-<div class="store-container">
-
-    <div class="product">
-        <img src="https://via.placeholder.com/150" alt="Laptop Bag">
-        <div class="product-title">Laptop Bag</div>
-        <input type="number" class="qty-box" min="1" value="1">
-        <button onclick="openCart('Laptop Bag', this)">Add to Cart</button>
-    </div>
-
-    <div class="product">
-        <img src="https://via.placeholder.com/150" alt="USB-C Dock">
-        <div class="product-title">USB-C Dock</div>
-        <input type="number" class="qty-box" min="1" value="1">
-        <button onclick="openCart('USB-C Dock', this)">Add to Cart</button>
-    </div>
-
-    <div class="product">
-        <img src="https://via.placeholder.com/150" alt="Wireless Mouse">
-        <div class="product-title">Wireless Mouse</div>
-        <input type="number" class="qty-box" min="1" value="1">
-        <button onclick="openCart('Wireless Mouse', this)">Add to Cart</button>
-    </div>
-
+<div class="store-container" id="productGrid">
+  <!-- Products will be injected here by JS -->
 </div>
 
-<!-- CART POPUP -->
-<div id="cartPopup">
-    <div class="popup-box">
-        <div class="popup-title">Add to Cart</div>
-
-        <label>Product</label>
-        <input type="text" id="cartProduct" readonly>
-
-        <label>Quantity</label>
-        <input type="number" id="cartQty" min="1">
-
-        <h3>Shipping Details</h3>
-        <input type="text" id="shipName" placeholder="Full Name">
-        <input type="text" id="shipAddress" placeholder="Address">
-        <input type="text" id="shipCity" placeholder="City">
-
-        <h3>Payment (Dummy Fields Only)</h3>
-        <input type="text" id="ccName" placeholder="Name on Card">
-        <input type="text" id="ccNumber" placeholder="Card Number">
-        <input type="text" id="ccExpiry" placeholder="Expiry (MM/YY)">
-        <input type="text" id="ccCVC" placeholder="CVC">
-
-        <div class="popup-buttons">
-            <button class="close-btn" onclick="closeCart()">Cancel</button>
-            <button onclick="submitOrder()">Confirm</button>
-        </div>
-    </div>
+<!-- CART SIDEBAR -->
+<div id="cartSidebar">
+  <h2>Your Cart</h2>
+  <div id="cartItems"></div>
+  <button class="checkout-btn" onclick="checkout()">Checkout</button>
 </div>
 
 <script>
-function openCart(productName, btn) {
-    let qty = btn.parentElement.querySelector(".qty-box").value;
+// Mock product catalog (5 items), with undercut pricing  
+const products = [
+  { id: 1, name: "New Era 9FORTY Adjustable Cap – Black", priceNZD: 39.95, img: "https://via.placeholder.com/150" },
+  { id: 2, name: "New Era 59FIFTY Fitted Cap – Navy", priceNZD: 44.95, img: "https://via.placeholder.com/150" },
+  { id: 3, name: "New Era 9FIFTY Snapback – Red", priceNZD: 41.95, img: "https://via.placeholder.com/150" },
+  { id: 4, name: "New Era Bucket Hat – Olive", priceNZD: 34.95, img: "https://via.placeholder.com/150" },
+  { id: 5, name: "New Era Knit Beanie – Grey", priceNZD: 24.95, img: "https://via.placeholder.com/150" }
+];
 
-    document.getElementById("cartProduct").value = productName;
-    document.getElementById("cartQty").value = qty;
+const cart = {};
 
-    document.getElementById("cartPopup").style.display = "flex";
+function renderStore() {
+  const grid = document.getElementById("productGrid");
+  products.forEach(prod => {
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
+      <img src="${prod.img}" alt="${prod.name}">
+      <div class="product-title">${prod.name}</div>
+      <div class="price">$${prod.priceNZD.toFixed(2)} NZD</div>
+      <input type="number" class="qty-box" min="1" value="1" id="qty-${prod.id}">
+      <button onclick="addToCart(${prod.id})">Add to Cart</button>
+    `;
+    grid.appendChild(div);
+  });
 }
 
-function closeCart() {
-    document.getElementById("cartPopup").style.display = "none";
+function addToCart(prodId) {
+  const qtyInput = document.getElementById("qty-" + prodId);
+  const qty = parseInt(qtyInput.value);
+  if (!qty || qty < 1) return;
+
+  if (!cart[prodId]) {
+    cart[prodId] = { ...products.find(p => p.id === prodId), qty: 0 };
+  }
+  cart[prodId].qty += qty;
+  updateCartUI();
 }
 
-function submitOrder() {
-    alert("This is a fake store – order not actually processed.");
-    closeCart();
+function updateCartUI() {
+  const cartItemsDiv = document.getElementById("cartItems");
+  cartItemsDiv.innerHTML = "";
+  let totalCount = 0;
+  for (const id in cart) {
+    const item = cart[id];
+    totalCount += item.qty;
+    const itemDiv = document.createElement("div");
+    itemDiv.className = "cart-item";
+    itemDiv.innerHTML = `
+      <strong>${item.name}</strong>
+      <span>Quantity: ${item.qty}</span>
+      <span>Price each: $${item.priceNZD.toFixed(2)}</span>
+      <span>Subtotal: $${(item.priceNZD * item.qty).toFixed(2)}</span>
+    `;
+    cartItemsDiv.appendChild(itemDiv);
+  }
+  document.getElementById("cartCount").innerText = totalCount;
 }
+
+function toggleCart() {
+  document.getElementById("cartSidebar").classList.toggle("open");
+}
+
+function checkout() {
+  alert("Checkout placeholder — in a real site, this is where you'd collect shipping & payment info.");
+}
+
+renderStore();
 </script>
 
 </body>
