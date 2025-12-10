@@ -10,7 +10,6 @@
         font-family: "Work Sans", Arial, sans-serif;
         background: #f5f6f7;
         margin: 0;
-        padding: 0;
     }
     header {
         background: #006644;
@@ -18,7 +17,7 @@
         color: white;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 16px;
     }
     header img {
         height: 44px;
@@ -28,34 +27,31 @@
         margin: 30px auto;
         padding: 20px;
     }
-    h2 {
-        margin-top: 0;
-        color: #006644;
-    }
     .section {
         background: white;
         padding: 20px;
         border-radius: 8px;
-        margin-bottom: 30px;
         border: 1px solid #ddd;
+        margin-bottom: 30px;
+    }
+    h2 {
+        margin-top: 0;
+        color: #006644;
     }
     .btn {
         display: inline-block;
         padding: 10px 18px;
         background: #006644;
         color: white;
-        text-decoration: none;
         border-radius: 6px;
-        margin-top: 8px;
-        cursor: pointer;
+        text-decoration: none;
+        margin: 5px 0;
     }
     table {
         width: 100%;
         margin-top: 20px;
         border-collapse: collapse;
         background: white;
-        border-radius: 8px;
-        overflow: hidden;
     }
     th, td {
         padding: 12px;
@@ -65,7 +61,6 @@
         background: #e3f2ec;
         color: #006644;
         font-weight: bold;
-        border-bottom: 2px solid #ccc;
     }
     tr:hover {
         background: #f1f8f4;
@@ -73,12 +68,13 @@
     #searchBar {
         width: 100%;
         padding: 10px;
-        border: 2px solid #ccc;
         border-radius: 6px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        border: 2px solid #ccc;
     }
     .papercut {
-        background: #fff4d1 !important;
+        background: #fff4d1;
+        font-weight: bold;
     }
 </style>
 </head>
@@ -92,36 +88,28 @@
 
 <div class="container">
 
-    <!-- WINDOWS SECTION -->
+    <!-- ===== WINDOWS INSTRUCTIONS ===== -->
     <div id="windowsSection" class="section" style="display:none;">
         <h2>Windows Printer Setup</h2>
-
-        <p><strong>First, check if you are using Papercut Hive:</strong></p>
-        <ul>
-            <li>If Papercut Hive is already set up and this is a new or re-imaged laptop, search for the Papercut invite email.</li>
-            <li>If the “Get started” link says it is expired, click <strong>New Invite</strong> and wait up to 10 minutes.</li>
-            <li>If you are not using Papercut Hive, choose your school or site from the list below.</li>
-        </ul>
 
         <h3>Install FujiFilm Driver (Windows)</h3>
         <a class="btn" href="https://support-fb.fujifilm.com/driver_downloads/ffopkpcl6250320w646iml.exe">
             Download FujiFilm Windows Driver
         </a>
 
-        <p><strong>Installation Steps:</strong></p>
         <ol>
             <li>Run the installer and accept the terms.</li>
             <li>Select <strong>Wireless or Ethernet</strong> connection.</li>
             <li>Wait for timeout → click OK when "printer can’t be found".</li>
-            <li>Choose <strong>Add printer manually</strong>.</li>
-            <li>Enter the printer IP (from the list below).</li>
-            <li>In the <strong>Filter</strong> box, type the model (e.g. 3070) and select the correct FujiFilm model.</li>
+            <li>Select <strong>Add printer manually</strong>.</li>
+            <li>Enter the printer IP from the list below.</li>
+            <li>Type the model (e.g. 3070) into the <strong>Filter</strong> box and select your model.</li>
             <li>Click <strong>Next</strong> twice.</li>
-            <li>Give the printer a simple name (avoid model codes).</li>
+            <li>Name the printer something simple (avoid model codes).</li>
         </ol>
     </div>
 
-    <!-- MAC SECTION -->
+    <!-- ===== MAC INSTRUCTIONS ===== -->
     <div id="macSection" class="section" style="display:none;">
         <h2>macOS Printer Setup</h2>
 
@@ -130,26 +118,21 @@
             Download FujiFilm macOS Driver
         </a>
 
-        <p><strong>When adding the printer in System Settings:</strong></p>
         <ul>
-            <li>Choose the <strong>LPD</strong> protocol.</li>
-            <li>For <strong>Driver</strong>, type “ff” and select the FujiFilm driver.</li>
-            <li>Do not select a model-specific driver.</li>
+            <li>When adding the printer, select the <strong>LPD</strong> protocol.</li>
+            <li>In the driver field, type <strong>ff</strong> and choose the FujiFilm driver.</li>
+            <li>Do <strong>not</strong> select a model-specific driver.</li>
             <li>Use a simple friendly printer name.</li>
         </ul>
     </div>
 
-    <!-- SHOW ALL BUTTON -->
-    <button id="showAllBtn" class="btn" style="display:none; margin-bottom:20px;">
-        Show all instructions
-    </button>
-
-    <!-- PRINTER LIST -->
+    <!-- ===== PRINTER LIST ===== -->
     <div class="section">
         <h2>Printer List</h2>
+
         <input id="searchBar" placeholder="Search by location or city…">
 
-        <table id="printerTable">
+        <table>
             <thead>
                 <tr>
                     <th>Location</th>
@@ -166,11 +149,11 @@
 
 <script>
 // ---------------- PRINTER DATA ----------------
-const PRINTER_LIST = [
+let PRINTER_LIST = [
   { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
-  { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
-  { location: "Tutors", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
-  { location: "Admn", city: "Sumner", model: "C3070", ip: "Papercut Hive" },
+  { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
+  { location: "Tutors", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
+  { location: "Admn", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
   { location: "Assistive Technology", city: "Sumner", model: "C3070", ip: "" },
   { location: "Hillmorton", city: "Christchurch", model: "C3070", ip: "172.16.100.102" },
   { location: "Kendal Ave", city: "Christchurch", model: "C3070", ip: "10.2.1.7" },
@@ -192,7 +175,7 @@ const PRINTER_LIST = [
   { location: "Ormiston Junior", city: "Auckland", model: "C3070", ip: "10.44.1.242" },
   { location: "Ormiston Senior", city: "Auckland", model: "C3070", ip: "10.10.204.248" },
   { location: "Pukekohe North", city: "South Auckland", model: "C3070", ip: "192.168.3.193" },
-  { location: "Whakatane", city: "Whakatane", model: "C3070", ip: "Papercut" },
+  { location: "Whakatane", city: "Whakatane", model: "C3070", ip: "Papercut Hive Email" },
   { location: "Onepoto Primary", city: "Auckland", model: "C3070", ip: "10.18.144.4" },
   { location: "Hamilton", city: "Hamilton", model: "C3070", ip: "192.168.0.235" },
   { location: "Tauranga", city: "Tauranga", model: "C3070", ip: "10.0.100.238" },
@@ -202,11 +185,17 @@ const PRINTER_LIST = [
   { location: "OceanView", city: "Dunedin", model: "C3070", ip: "10.67.96.6" },
   { location: "Merrilands Schol", city: "New Plymouth", model: "ApeosPort VII C3321", ip: "10.155.18.220" },
   { location: "Ginny Printer", city: "Sumner", model: "Brother", ip: "10.59.122.170" },
-  { location: "TImaru SRC office", city: "Timaru", model: "C3070", ip: "10.67.96.169:80" },
+  { location: "Timaru SRC office", city: "Timaru", model: "C3070", ip: "10.67.96.169:80" },
   { location: "Waipahihi School", city: "Taupō", model: "C3070", ip: "192.168.100.249" },
   { location: "Waipahihi School", city: "Taupō", model: "C3070", ip: "192.168.102.3" },
   { location: "Marewa School", city: "Napier", model: "C3070", ip: "192.168.1.201" },
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
+];
+
+// GROUP PAPERCUT PRINTERS FIRST
+PRINTER_LIST = [
+  ...PRINTER_LIST.filter(p => p.ip.toLowerCase().includes("papercut")),
+  ...PRINTER_LIST.filter(p => !p.ip.toLowerCase().includes("papercut"))
 ];
 
 // ---------------- OS Detection ----------------
@@ -217,66 +206,42 @@ function detectOS() {
     return "unknown";
 }
 
-function showCorrectSection() {
+function showInstructions() {
     const os = detectOS();
-    const win = document.getElementById("windowsSection");
-    const mac = document.getElementById("macSection");
-    const btn = document.getElementById("showAllBtn");
-
-    if (os === "windows") {
-        win.style.display = "block";
-        btn.style.display = "block";
-    } else if (os === "mac") {
-        mac.style.display = "block";
-        btn.style.display = "block";
-    } else {
-        // Unknown OS - show both
-        win.style.display = "block";
-        mac.style.display = "block";
-    }
+    if (os === "windows") document.getElementById("windowsSection").style.display = "block";
+    if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-document.getElementById("showAllBtn").onclick = () => {
-    document.getElementById("windowsSection").style.display = "block";
-    document.getElementById("macSection").style.display = "block";
-};
-
-// ---------------- Printer List Rendering ----------------
+// ---------------- Load Table ----------------
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
 
     PRINTER_LIST.forEach(p => {
-        const row = document.createElement("tr");
+        const tr = document.createElement("tr");
+        if (p.ip.toLowerCase().includes("papercut")) tr.classList.add("papercut");
 
-        if (p.ip.toLowerCase().includes("papercut")) {
-            row.classList.add("papercut");
-        }
-
-        row.innerHTML = `
+        tr.innerHTML = `
             <td>${p.location}</td>
             <td>${p.city}</td>
             <td>${p.model}</td>
             <td>${p.ip || "—"}</td>
         `;
-        body.appendChild(row);
+        body.appendChild(tr);
     });
 }
 
 // ---------------- Search Filter ----------------
-document.getElementById("searchBar").addEventListener("keyup", function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#printerBody tr");
-
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
+document.getElementById("searchBar").addEventListener("keyup", function () {
+    const text = this.value.toLowerCase();
+    document.querySelectorAll("#printerBody tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(text) ? "" : "none";
     });
 });
 
 // ---------------- INIT ----------------
+showInstructions();
 loadPrinters();
-showCorrectSection();
 </script>
 
 </body>
