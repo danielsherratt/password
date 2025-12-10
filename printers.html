@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ko Taku Reo • Printer Installer</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    body {
+        font-family: "Work Sans", Arial, sans-serif;
+        background: #f5f6f7;
+        margin: 0;
+        padding: 0;
+    }
+    header {
+        background: #006644;
+        padding: 12px 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    header img {
+        height: 46px;
+    }
+    .container {
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    h2 {
+        margin-top: 0;
+        color: #006644;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+    th {
+        background: #e3f2ec;
+        color: #006644;
+        border-bottom: 2px solid #ccc;
+        font-weight: bold;
+    }
+    tr:hover {
+        background: #f1f8f4;
+    }
+    .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        background: #006644;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        margin: 6px 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <img src="logo.png" alt="Ko Taku Reo Logo">
+</header>
+
+<div class="container">
+    <h2>Select Printers to Install</h2>
+
+    <table id="printerTable">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>School Name</th>
+                <th>Printer IP</th>
+                <th>Extra Step?</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- Sample Data — Replace as needed -->
+            <tr>
+                <td><input type="checkbox" class="printerChk"></td>
+                <td>Kelston Deaf Education Campus</td>
+                <td>10.20.14.25</td>
+                <td>No</td>
+            </tr>
+
+            <tr>
+                <td><input type="checkbox" class="printerChk"></td>
+                <td>Christchurch Campus</td>
+                <td>10.50.6.44</td>
+                <td>Yes</td>
+            </tr>
+
+            <tr>
+                <td><input type="checkbox" class="printerChk"></td>
+                <td>Wellington Resource Centre</td>
+                <td>10.40.22.15</td>
+                <td>No</td>
+            </tr>
+
+            <tr>
+                <td><input type="checkbox" class="printerChk"></td>
+                <td>Palmerston North Resource Centre</td>
+                <td>10.41.33.77</td>
+                <td>No</td>
+            </tr>
+
+            <tr>
+                <td><input type="checkbox" class="printerChk"></td>
+                <td>Dunedin Resource Centre</td>
+                <td>10.70.16.89</td>
+                <td>Yes</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    <button class="btn" onclick="generateInstaller()">Get Installer</button>
+</div>
+
+<script>
+// ---------- Detect OS ----------
+function detectOS() {
+    const platform = navigator.platform.toLowerCase();
+    const ua = navigator.userAgent.toLowerCase();
+
+    if (platform.includes("mac")) return "mac";
+    if (platform.includes("win")) return "windows";
+    if (ua.includes("mac")) return "mac";
+    if (ua.includes("windows")) return "windows";
+
+    return "unknown";
+}
+
+// ---------- Get selected printers ----------
+function getSelectedPrinters() {
+    const rows = document.querySelectorAll("#printerTable tbody tr");
+    const printers = [];
+
+    rows.forEach(row => {
+        if (row.querySelector(".printerChk").checked) {
+            printers.push({
+                name: row.children[1].textContent.trim(),
+                ip: row.children[2].textContent.trim()
+            });
+        }
+    });
+
+    return printers;
+}
+
+// ---------- Build macOS .command ----------
+function buildMacCommand(printers) {
+    let script = "#!/bin/bash\n\n";
+    script += 'echo "Installing selected Ko Taku Reo printers..."\n\n';
+
+    printers.forEach(p => {
+        script += `echo "Installing ${p.name}"\n`;
+        script += `lpadmin -p "${p.name}" -E -v "lpd://${p.ip}" -m everywhere\n\n`;
+    });
+
+    script += 'echo "Done!"\n';
+    return script;
+}
+
+// ---------- Build Windows .cmd (PowerShell inside) ----------
+function buildWindowsCMD(printers) {
+    let ps = "";
+
+    printers.forEach(p => {
+        ps += `Write-Host "Installing ${p.name}"\n`;
+        ps += `if (-not (Get-PrinterPort -Name '${p.ip}' -ErrorAction SilentlyContinue)) {\n`;
+        ps += `  Add-PrinterPort -Name '${p.ip}' -PrinterHostAddress '${p.ip}'\n}\n`;
+        ps += `Add-Printer -Name '${p.name}' -DriverName 'Fuji Xerox ApeosPort-V PS' -PortName '${p.ip}'\n\n`;
+    });
+
+    let cmd =
+`@echo off
+:: Ko Taku Reo embedded PowerShell printer installer
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+"$ps = @'
+${ps}
+'@; Invoke-Expression $ps"
+
+echo Done.
+pause
+`;
+
+    return cmd;
+}
+
+// ---------- Generate file + download ----------
+function generateInstaller() {
+    const printers = getSelectedPrinters();
+    if (printers.length === 0) {
+        alert("Please select at least one printer.");
+        return;
+    }
+
+    const os = detectOS();
+    let fileContent = "";
+    let fileName = "";
+
+    if (os === "mac") {
+        fileContent = buildMacCommand(printers);
+        fileName = "install-printers.command";
+    } else if (os === "windows") {
+        fileContent = buildWindowsCMD(printers);
+        fileName = "install-printers.cmd";
+    } else {
+        alert("Unsupported OS. Please use macOS or Windows.");
+        return;
+    }
+
+    const blob = new Blob([fileContent], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+}
+</script>
+
+</body>
+</html>
