@@ -12,12 +12,13 @@
         margin: 0;
     }
 
+    /* HEADER LOGO — now bigger */
     header {
         background: white;
         padding: 12px 20px;
     }
     header img {
-        height: 44px;
+        height: 60px; /* increased size */
     }
 
     .container {
@@ -27,11 +28,19 @@
         position: relative;
     }
 
-    /* TOP-RIGHT DRIVER BUTTON */
+    /* TOP-RIGHT DRIVER BUTTON (GLOBAL) */
     .top-actions {
         position: absolute;
         top: 20px;
         right: 20px;
+    }
+
+    /* INLINE BUTTON INSIDE INSTRUCTIONS */
+    .instructions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 10px;
     }
 
     /* BUTTON STYLE */
@@ -39,7 +48,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 10px 18px;
+        padding: 8px 14px;
         background: white;
         color: #006644;
         border: 2px solid #006644;
@@ -48,6 +57,7 @@
         cursor: pointer;
         transition: 0.2s ease;
         text-decoration: none;
+        font-size: 14px;
     }
     .btn:hover {
         background: #e3f2ec;
@@ -65,32 +75,32 @@
         justify-content: center;
         color: #444;
         font-size: 18px;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         margin-top: 60px;
     }
 
-    /* WRITTEN INSTRUCTIONS - smaller version */
+    /* SMALLER INSTRUCTIONS BOX */
     details {
         border: 2px solid #74b59b;
         background: #f4faf7;
-        padding: 12px;
+        padding: 10px;
         border-radius: 8px;
-        margin-bottom: 25px;
+        margin-bottom: 18px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        font-size: 15px;
+        font-size: 14px; /* smaller font */
     }
     details summary {
         cursor: pointer;
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 700;
         color: #006644;
-        padding: 6px;
+        padding: 4px;
         margin-bottom: 4px;
     }
 
     .section {
         background: white;
-        padding: 20px;
+        padding: 18px;
         border-radius: 8px;
         border: 1px solid #ddd;
         margin-bottom: 30px;
@@ -125,12 +135,17 @@
         background: #f1f8f4;
     }
 
+    /* SEARCH BAR FIXED WIDTH */
     #searchBar {
-        width: 100%;
+        width: 90%;
+        max-width: 600px;
         padding: 10px;
         border-radius: 6px;
         margin-bottom: 15px;
         border: 2px solid #ccc;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* COPY ICON + TICK */
@@ -141,13 +156,11 @@
         justify-content: center;
         margin-left: 8px;
     }
-
     .copy-icon {
         cursor: pointer;
         color: #006644;
         font-size: 16px;
     }
-
     .tick-icon {
         color: green;
         font-size: 16px;
@@ -164,19 +177,22 @@
 
 <div class="container">
 
-    <!-- TOP-RIGHT DRIVER BUTTON -->
-    <div class="top-actions">
-        <a id="downloadBtn" class="btn" href="#">
-            <i class="fa-solid fa-download"></i> Driver
-        </a>
-    </div>
-
-    <!-- VIDEO PLACEHOLDER -->
+    <!-- VIDEO -->
     <div class="video-box">Video coming soon…</div>
 
-    <!-- WRITTEN INSTRUCTIONS -->
+    <!-- INSTRUCTIONS BOX -->
     <details>
-        <summary>Written Instructions</summary>
+        <summary>
+            <div class="instructions-header">
+                <span>Instructions</span>
+
+                <!-- DRIVER BUTTON MOVED TO RIGHT OF HEADING -->
+                <a id="downloadBtn" class="btn" href="#">
+                    <i class="fa-solid fa-download"></i>
+                    Driver
+                </a>
+            </div>
+        </summary>
 
         <!-- WINDOWS -->
         <div id="windowsSection" class="section" style="display:none;">
@@ -187,9 +203,9 @@
                 <li>Wait for timeout → click OK.</li>
                 <li>Select <strong>Add printer manually</strong>.</li>
                 <li>Enter the printer IP.</li>
-                <li>Search model in the <strong>Filter</strong> field.</li>
+                <li>Search model in the <strong>Filter</strong>.</li>
                 <li>Click <strong>Next</strong> twice.</li>
-                <li>Use a simple name.</li>
+                <li>Name it something simple.</li>
             </ol>
         </div>
 
@@ -197,10 +213,10 @@
         <div id="macSection" class="section" style="display:none;">
             <h2>macOS Setup</h2>
             <ul>
-                <li>Choose the <strong>LPD</strong> protocol.</li>
+                <li>Use the <strong>LPD</strong> protocol.</li>
                 <li>Type <strong>ff</strong> in the driver field.</li>
                 <li>Select FujiFilm driver.</li>
-                <li>Name the printer something simple.</li>
+                <li>Use a simple name.</li>
             </ul>
         </div>
 
@@ -224,7 +240,7 @@
             <tbody id="printerBody"></tbody>
         </table>
 
-        <!-- ITSupport button at bottom -->
+        <!-- ITSupport at bottom -->
         <div style="text-align:center; margin-top:25px;">
             <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
                 <i class="fa-solid fa-envelope"></i> ITSupport
@@ -235,7 +251,7 @@
 </div>
 
 <script>
-// ---------------- PRINTER LIST ----------------
+// PRINTER LIST (unchanged)
 let PRINTER_LIST = [
   { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
   { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" },
@@ -279,13 +295,12 @@ let PRINTER_LIST = [
   { location: "Westmere", city: "Auckland", model: "C4571", ip: "192.168.133.64" }
 ];
 
-// Papercut printers at top
+// Sort Papercut at top
 PRINTER_LIST = [
     ...PRINTER_LIST.filter(p => p.ip.includes("Papercut")),
     ...PRINTER_LIST.filter(p => !p.ip.includes("Papercut"))
 ];
 
-/* Detect OS */
 function detectOS() {
     const p = navigator.platform.toLowerCase();
     if (p.includes("win")) return "windows";
@@ -293,7 +308,7 @@ function detectOS() {
     return "unknown";
 }
 
-/* Configure Driver Button Label + Link */
+/* Update driver button label */
 function configureDownloadButton() {
     const os = detectOS();
     const btn = document.getElementById("downloadBtn");
@@ -310,14 +325,14 @@ function configureDownloadButton() {
     }
 }
 
-/* Only show relevant instructions */
+/* Show OS-specific instructions */
 function showInstructions() {
     const os = detectOS();
     if (os === "windows") document.getElementById("windowsSection").style.display = "block";
     if (os === "mac") document.getElementById("macSection").style.display = "block";
 }
 
-/* Build Printer Table */
+/* Populate table */
 function loadPrinters() {
     const body = document.getElementById("printerBody");
     body.innerHTML = "";
@@ -342,10 +357,11 @@ function loadPrinters() {
             <td>${p.model}</td>
             <td>${ipText} ${copyHTML}</td>
         `;
+
         body.appendChild(tr);
     });
 
-    // Copy behaviour (flip icon to tick)
+    // Copy behaviour
     document.querySelectorAll(".copy-icon").forEach(icon => {
         icon.addEventListener("click", function () {
             navigator.clipboard.writeText(this.dataset.ip);
@@ -363,7 +379,7 @@ function loadPrinters() {
     });
 }
 
-/* Search Filter */
+/* Search filter */
 document.getElementById("searchBar").addEventListener("keyup", function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll("#printerBody tr").forEach(row => {
@@ -371,7 +387,7 @@ document.getElementById("searchBar").addEventListener("keyup", function () {
     });
 });
 
-/* INIT */
+/* Init */
 configureDownloadButton();
 showInstructions();
 loadPrinters();
