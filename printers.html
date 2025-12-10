@@ -15,18 +15,18 @@
     /* HEADER */
     header {
         background: white;
-        padding: 12px 20px;
+        padding: 14px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         text-align: center;
     }
     header img {
-        height: 60px;
+        height: 70px;
     }
     header .title {
-        font-size: 26px;
+        font-size: 30px;
         font-weight: 700;
         color: #006644;
     }
@@ -35,6 +35,20 @@
         max-width: 1200px;
         margin: 20px auto;
         padding: 20px;
+    }
+
+    .video-box {
+        width: 100%;
+        height: 260px;
+        background: #ddd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-size: 18px;
+        margin-bottom: 20px;
+        margin-top: 20px;
     }
 
     /* BUTTONS */
@@ -57,36 +71,12 @@
         transform: translateY(-2px);
     }
 
-    /* VIDEO */
-    .video-box {
-        width: 100%;
-        height: 260px;
-        background: #ddd;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #444;
-        font-size: 18px;
-        margin-bottom: 20px;
-        margin-top: 40px;
-    }
-
-    /* MAIN SECTION */
-    .section {
-        background: white;
-        padding: 18px 20px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        margin-bottom: 30px;
-    }
-
-    /* STEP ROWS – all 1/2/3 share this */
+    /* STEP STRUCTURE */
     .step-row {
         display: flex;
         align-items: flex-start;
         gap: 12px;
-        margin-bottom: 28px; /* extra spacing between steps */
+        margin-bottom: 35px;
     }
     .step-label {
         font-size: 28px;
@@ -94,24 +84,19 @@
         color: #006644;
         width: 35px;
         text-align: center;
-        user-select: none;
         flex-shrink: 0;
     }
-    .step-content {
-        flex: 1;
-    }
-
-    /* HEADINGS INSIDE STEP CONTENT */
     .step-content h2 {
         margin: 0 0 10px 0;
         color: #006644;
-        font-size: 20px;
+        font-size: 22px;
+        font-weight: 700;
     }
 
     /* SEARCH BAR */
     #searchBar {
-        width: 70%;
-        max-width: 600px;
+        width: 65%;
+        max-width: 550px;
         padding: 10px;
         border-radius: 6px;
         border: 2px solid #ccc;
@@ -121,9 +106,9 @@
     /* TABLE */
     table {
         width: 100%;
-        margin-top: 10px;
         border-collapse: collapse;
         background: white;
+        margin-top: 10px;
     }
     th, td {
         padding: 12px;
@@ -154,24 +139,25 @@
         display: none;
     }
 
-    /* MORE HELP */
+    /* MORE SUPPORT */
     details {
         border: 2px solid #74b59b;
         background: #f4faf7;
-        padding: 8px 10px;
+        padding: 0 10px 8px 10px;
         border-radius: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-details summary {
-    cursor: pointer;
-    font-size: 20px;     /* was 16px */
-    font-weight: 700;
-    color: #006644;
-    padding: 6px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    details summary {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: 700;
+        color: #006644;
+        padding: 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: -6px; /* Pull upward for alignment */
+    }
     .expand-icon {
         font-size: 20px;
         color: #006644;
@@ -195,91 +181,122 @@ details summary {
 
     <div class="video-box">Video coming soon…</div>
 
-    <div class="section">
-
-        <!-- STEP 1: DRIVER -->
-        <div class="step-row">
-            <span class="step-label">1</span>
-            <div class="step-content">
-                <a id="downloadBtn" class="btn">
-                    <i class="fa-solid fa-download"></i> Driver
-                </a>
-            </div>
+    <!-- STEP 1 -->
+    <div class="step-row">
+        <span class="step-label">1</span>
+        <div class="step-content">
+            <h2>Driver</h2>
+            <a id="downloadBtn" class="btn">
+                <i class="fa-solid fa-download"></i> Driver
+            </a>
         </div>
-
-        <!-- STEP 2: PRINTER LIST -->
-        <div class="step-row">
-            <span class="step-label">2</span>
-            <div class="step-content">
-                <h2>Printer List</h2>
-
-                <input id="searchBar" placeholder="Search by location or city…">
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Location</th>
-                            <th>City</th>
-                            <th>Model</th>
-                            <th>IP / Setup</th>
-                        </tr>
-                    </thead>
-                    <tbody id="printerBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- STEP 3: MORE HELP -->
-        <div class="step-row" style="margin-bottom: 0;">
-            <span class="step-label">3</span>
-            <div class="step-content">
-                <details>
-                    <summary>
-                        More help
-                        <i class="fa-solid fa-circle-chevron-right expand-icon"></i>
-                    </summary>
-
-                    <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
-                        <h2>Windows Setup</h2>
-                        <ol>
-                            <li>Run the installer and accept the terms.</li>
-                            <li>Select <strong>Wireless or Ethernet</strong>.</li>
-                            <li>Wait for timeout → click OK.</li>
-                            <li>Select <strong>Add printer manually</strong>.</li>
-                            <li>Enter the printer IP.</li>
-                            <li>Search model in the <strong>Filter</strong>.</li>
-                            <li>Click <strong>Next</strong> twice.</li>
-                            <li>Name it something simple.</li>
-                        </ol>
-                    </div>
-
-                    <div id="macSection" class="section" style="display:none; margin-top:10px;">
-                        <h2>macOS Setup</h2>
-                        <ul>
-                            <li>Use the <strong>LPD</strong> protocol.</li>
-                            <li>Type <strong>ff</strong> in the driver field.</li>
-                            <li>Select FujiFilm driver.</li>
-                            <li>Name the printer something simple.</li>
-                        </ul>
-                    </div>
-
-                    <div style="text-align:center; margin-top:15px;">
-                        <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
-                            <i class="fa-solid fa-envelope"></i> ITSupport
-                        </a>
-                    </div>
-                </details>
-            </div>
-        </div>
-
     </div>
+
+    <!-- STEP 2 -->
+    <div class="step-row">
+        <span class="step-label">2</span>
+        <div class="step-content">
+            <h2>Printer List</h2>
+
+            <input id="searchBar" placeholder="Search by location or city…">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>City</th>
+                        <th>Model</th>
+                        <th>IP / Setup</th>
+                    </tr>
+                </thead>
+                <tbody id="printerBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-row" style="margin-bottom: 10px;">
+        <span class="step-label">3</span>
+        <div class="step-content">
+
+            <details>
+                <summary>
+                    More support
+                    <i class="fa-solid fa-circle-chevron-right expand-icon"></i>
+                </summary>
+
+                <div id="windowsSection" class="section" style="display:none; margin-top:10px;">
+                    <h2>Windows Setup</h2>
+                    <ol>
+                        <li>Run the installer and accept the terms.</li>
+                        <li>Select <strong>Wireless or Ethernet</strong>.</li>
+                        <li>Wait for timeout → click OK.</li>
+                        <li>Select <strong>Add printer manually</strong>.</li>
+                        <li>Enter the printer IP.</li>
+                        <li>Search model in the <strong>Filter</strong>.</li>
+                        <li>Click <strong>Next</strong> twice.</li>
+                        <li>Name it something simple.</li>
+                    </ol>
+                </div>
+
+                <div id="macSection" class="section" style="display:none; margin-top:10px;">
+                    <h2>macOS Setup</h2>
+                    <ul>
+                        <li>Use the <strong>LPD</strong> protocol.</li>
+                        <li>Type <strong>ff</strong> in the driver field.</li>
+                        <li>Select FujiFilm driver.</li>
+                        <li>Name the printer something simple.</li>
+                    </ul>
+                </div>
+
+                <div style="text-align:center; margin-top:15px;">
+                    <a class="btn" href="mailto:ITSupport@kotakureo.school.nz">
+                        <i class="fa-solid fa-envelope"></i> ITSupport
+                    </a>
+                </div>
+
+            </details>
+
+        </div>
+    </div>
+
 </div>
 
 <script>
-/* Minimal sample printer data */
-let PRINTER_LIST = [
-  { location: "Riselaw / Carlton Hill", city: "Dunedin", model: "C3070", ip: "192.168.158.10" },
-  { location: "Library", city: "Sumner", model: "C3070", ip: "Papercut Hive Email" }
+/* PRINTER LIST — full dataset */
+const PRINTER_LIST = [
+  { "location": "Riselaw / Carlton Hill", "city": "Dunedin", "model": "C3070", "ip": "192.168.158.10" },
+  { "location": "Sumner Campus", "city": "Sumner", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Hillmorton", "city": "Christchurch", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Kendal Ave", "city": "Christchurch", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Salsbury", "city": "Nelson", "model": "C3750", "ip": "192.168.116.98" },
+  { "location": "Ascot", "city": "Invercargil", "model": "C3070", "ip": "10.144.240.200" },
+  { "location": "Awapuni", "city": "Palmerston North", "model": "C250i", "ip": "192.168.20.195" },
+  { "location": "Titahi Bay", "city": "Wellington", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Kelston Campus", "city": "Auckland", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Anton", "city": "South Auckland", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Oteha Valley", "city": "Auckland", "model": "C3070", "ip": "10.78.101.253" },
+  { "location": "Hagley College", "city": "Christchurch", "model": "C3070", "ip": "10.57.178.28" },
+  { "location": "Kelston Primary", "city": "Auckland", "model": "C3070", "ip": "172.16.10.200" },
+  { "location": "Kelston Intermediate", "city": "Auckland", "model": "C3070", "ip": "172.16.11.111" },
+  { "location": "Kelston Girls", "city": "Auckland", "model": "C3070", "ip": "10.15.0.40" },
+  { "location": "Ormiston Primary", "city": "Auckland", "model": "C3070", "ip": "10.0.61.1" },
+  { "location": "Ormiston Junior", "city": "Auckland", "model": "C3070", "ip": "10.44.1.242" },
+  { "location": "Ormiston Senior", "city": "Auckland", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Pukekohe North", "city": "South Auckland", "model": "C3070", "ip": "192.168.3.193" },
+  { "location": "Whakatane", "city": "Whakatane", "model": "C3070", "ip": "Papercut Hive Email" },
+  { "location": "Onepoto Primary", "city": "Auckland", "model": "C3070", "ip": "10.18.144.4" },
+  { "location": "Hamilton", "city": "Hamilton", "model": "C3070", "ip": "192.168.0.235" },
+  { "location": "Tauranga", "city": "Tauranga", "model": "C3070", "ip": "10.0.100.238" },
+  { "location": "Rotorua SRC", "city": "Rotorua", "model": "C3070", "ip": "10.20.30.214" },
+  { "location": "Edgecoumbe", "city": "Northland", "model": "C3070", "ip": "192.168.1.200" },
+  { "location": "Tikipungi High School", "city": "Northland", "model": "C3070", "ip": "10.0.0.180" },
+  { "location": "OceanView", "city": "Dunedin", "model": "C3070", "ip": "10.67.96.6" },
+  { "location": "Merrilands Schol", "city": "New Plymouth", "model": "C3321", "ip": "10.155.18.220" },
+  { "location": "Timaru SRC", "city": "Timaru", "model": "C3070", "ip": "10.67.96.169:80" },
+  { "location": "Waipahihi School", "city": "Taupō", "model": "C3070", "ip": "192.168.100.249" },
+  { "location": "Marewa School", "city": "Napier", "model": "C3070", "ip": "192.168.1.201" },
+  { "location": "Westmere", "city": "Auckland", "model": "C4571", "ip": "192.168.133.64" }
 ];
 
 function detectOS() {
@@ -304,7 +321,6 @@ function configureDownloadButton() {
         btn.innerHTML = `<i class="fa-solid fa-download"></i> Driver`;
     }
 }
-
 
 function showInstructions() {
     const os = detectOS();
