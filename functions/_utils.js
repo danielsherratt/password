@@ -1,19 +1,22 @@
 // Shared wordlist + helpers for password generation
 
 export const WORDS = [
-  "acorn","amber","apple","apricot","bamboo","beacon","berry","biscuit",
-  "blossom","breeze","bridge","bright","bubble","cactus","camera","candle",
-  "canyon","carrot","castle","cedar","cherry","citrus","clover","cloud",
-  "coffee","coral","cotton","crystal","daisy","delta","desert","dolphin",
-  "ember","emerald","feather","forest","fossil","frost","galaxy","garden",
-  "ginger","glacier","granite","harbor","harvest","horizon","jasmine",
-  "juniper","lantern","lemon","library","light","maple","meadow","mint",
-  "moon","mountain","nebula","ocean","olive","onyx","orchard","owl","paper",
-  "pebble","pepper","photon","pioneer","planet","plenty","pocket","prairie",
-  "quiet","quartz","rain","raven","river","rocket","sage","sandstone",
-  "shadow","silent","silver","solar","spark","spring","stable","star",
-  "stone","summer","sunrise","sunset","thunder","timber","tower","valley",
-  "velvet","violet","walnut","whisper","willow","winter","zenith"
+  "acorn","amber","anchor","apple","apricot","archer","aurora","autumn",
+  "bamboo","beacon","berry","biscuit","blossom","breeze","bridge","bright",
+  "bubble","cactus","camera","candle","canyon","carrot","castle","cedar",
+  "cherry","citrus","clover","cloud","coffee","comet","coral","cotton",
+  "crimson","crystal","daisy","dawn","delta","desert","dolphin","drizzle",
+  "ember","emerald","falcon","feather","fern","forest","fossil","frost",
+  "galaxy","garden","ginger","glacier","granite","harbor","harvest","hazel",
+  "horizon","island","ivy","jasmine","juniper","lagoon","lantern","lavender",
+  "lemon","library","lilac","light","lotus","maple","meadow","meteor",
+  "mint","mist","moon","mountain","nebula","ocean","olive","onyx",
+  "orchard","owl","paper","pebble","pepper","photon","pioneer","planet",
+  "plenty","pocket","prairie","quartz","quiet","raven","reef","river",
+  "rocket","sage","sandstone","shadow","silent","silver","solar","spark",
+  "spring","stable","star","stone","summer","sunrise","sunset","thunder",
+  "timber","tower","valley","velvet","violet","walnut","whisper","willow",
+  "winter","zenith"
 ];
 
 // Substrings we don't want anywhere in the final password (lowercased).
