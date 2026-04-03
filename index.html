@@ -34,8 +34,9 @@
       width:100%;max-width:640px;background:var(--card);padding:26px;border-radius:20px;
       box-shadow:var(--shadow);border:1px solid var(--border);
     }
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
     .title{
-      display:flex;align-items:center;gap:14px;margin:0 0 12px;
+      display:flex;align-items:center;gap:14px;margin:0;
       font-weight:700;font-size:1.6rem;
     }
     .logo{
@@ -45,6 +46,13 @@
     }
     .subtitle{margin:0 0 20px;color:var(--muted);font-size:1.02rem;line-height:1.45}
 
+    .top-actions{display:flex;gap:8px}
+    .icon-btn{
+      width:42px;height:42px;border:1px solid var(--border);border-radius:11px;background:var(--card-soft);
+      color:var(--accent);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+      transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+    }
+    .icon-btn:hover{transform:translateY(-2px);box-shadow:0 10px 18px rgba(37,99,235,.16);background:#eff6ff}
     .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}
     .btn{
       border:1px solid var(--border);padding:12px 18px;border-radius:12px;background:var(--card-soft);color:var(--text);
@@ -157,7 +165,9 @@
         min-height:100dvh;
         max-width:none;
       }
+      .topbar{align-items:stretch;gap:12px;flex-direction:column;}
       .title{font-size:1.45rem;gap:10px;flex-wrap:wrap;}
+      .top-actions{width:100%;justify-content:flex-end;}
       .subtitle{font-size:1.05rem;}
       .controls{
         grid-template-columns:1fr;
@@ -211,14 +221,22 @@
 </head>
 <body>
   <div class="wrap" id="app">
-    <div class="title"><span class="logo">🔒</span>Password Helper</div>
+    <div class="topbar">
+      <div class="title"><span class="logo">🔒</span>Password Helper</div>
+      <div class="top-actions">
+        <button id="btnApi" class="icon-btn" title="API example" aria-label="Open API example">
+          <i class="fa-solid fa-code"></i>
+        </button>
+        <button id="btnHistory" class="icon-btn" title="Password copy history" aria-label="Open history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
+      </div>
+    </div>
     <p class="subtitle">Generate simple or strong, easy-to-remember passwords.</p>
 
     <div class="controls">
       <button id="btnSimple" class="btn primary">🙂 Simple</button>
       <button id="btnStrong" class="btn">🛡️ Strong</button>
-      <button id="btnApi" class="btn"><i class="fa-solid fa-link"></i> API</button>
-      <button id="btnHistory" class="btn"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
     </div>
 
     <div class="password-label" id="passwordLabel">Simple password</div>
@@ -282,7 +300,6 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
 
     const HISTORY_KEY = 'pwdCopyHistory';
     const HISTORY_LIMIT = 50;
-    const DUPLICATE_WINDOW_MS = 2500;
     const nzFormatter = new Intl.DateTimeFormat('en-NZ', {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -308,12 +325,9 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!password || password.trim()==='') return;
       const history = readHistory();
       const now = Date.now();
-      const latest = history[0];
-      if (latest && latest.pwd === password && (now - latest.ts) < DUPLICATE_WINDOW_MS) {
-        return;
-      }
-      history.unshift({pwd: password, ts: now});
-      writeHistory(history);
+      const deduped = history.filter(entry => entry.pwd !== password);
+      deduped.unshift({pwd: password, ts: now});
+      writeHistory(deduped);
     }
 
     function formatTimestamp(ts){
