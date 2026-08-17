@@ -150,6 +150,13 @@
     .history-list li span{white-space:nowrap;}
     .history-list .pwd{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;}
     .history-list .time{color:var(--muted);font-size:0.85rem;text-align:right;}
+    .history-list .history-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .history-copy{
+      border:1px solid #bfdbfe;border-radius:9px;padding:6px 10px;background:var(--accent-soft);
+      color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+      font-size:0.9rem;transition:transform .12s ease,background .12s ease;
+    }
+    .history-copy:hover{transform:translateY(-1px);background:#dbeafe}
     .history-list .empty{font-family:inherit;font-style:italic;justify-content:center;color:var(--muted);}
     .history-list .nickname{
       font-family:inherit;font-weight:600;color:var(--accent);font-size:0.85rem;
@@ -213,6 +220,10 @@
       }
       .history-list .time{
         text-align:left;
+      }
+      .history-list .history-actions{
+        width:100%;
+        justify-content:space-between;
       }
       .modal{
         width:96%;
@@ -358,6 +369,11 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       writeHistory(deduped);
     }
 
+    function hasNickname(password){
+      const entry = readHistory().find(item => item.pwd === password);
+      return Boolean(entry && entry.nickname);
+    }
+
     function setNickname(password, nickname){
       const history = readHistory();
       const entry = history.find(item => item.pwd === password);
@@ -394,8 +410,19 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
         const time = document.createElement('span');
         time.className = 'time';
         time.textContent = formatTimestamp(entry.ts);
+        const copy = document.createElement('button');
+        copy.className = 'history-copy';
+        copy.type = 'button';
+        copy.title = 'Copy to clipboard';
+        copy.setAttribute('aria-label', `Copy ${entry.nickname || 'password'} to clipboard`);
+        copy.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        copy.addEventListener('click', () => copyFromHistory(entry.pwd, copy));
+        const actions = document.createElement('span');
+        actions.className = 'history-actions';
+        actions.appendChild(time);
+        actions.appendChild(copy);
         li.appendChild(pwd);
-        li.appendChild(time);
+        li.appendChild(actions);
         historyList.appendChild(li);
       });
     }
@@ -427,14 +454,25 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!text) return;
       try{
         await navigator.clipboard.writeText(text);
+        const named = hasNickname(text);
         recordHistory(text);
         copyBtn.innerHTML='<i class="fa-solid fa-check"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
-        openNicknamePrompt(text);
+        if(!named) openNicknamePrompt(text);
       }catch{
         copyBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
       }
+    }
+
+    async function copyFromHistory(password, btn){
+      try{
+        await navigator.clipboard.writeText(password);
+        btn.innerHTML='<i class="fa-solid fa-check"></i>';
+      }catch{
+        btn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+      }
+      setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
     }
 
     let pendingNicknamePwd = null;
