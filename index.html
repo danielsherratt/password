@@ -562,11 +562,12 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       apiCode.focus();
     };
     closeApi.onclick=()=>closeOverlay(overlay);
-    document.getElementById('btnHistory').onclick=()=>{
+    function openHistory(){
       renderHistory();
       clearConfirm.classList.add('hidden');
       openOverlay(historyOverlay);
-    };
+    }
+    document.getElementById('btnHistory').onclick=openHistory;
     closeHistory.onclick=()=>{
       closeOverlay(historyOverlay);
       clearConfirm.classList.add('hidden');
@@ -607,6 +608,15 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
         if(overlay.style.display==='flex') closeOverlay(overlay);
         if(historyOverlay.style.display==='flex') closeOverlay(historyOverlay);
         if(nicknameOverlay.style.display==='flex') closeNicknamePrompt();
+        return;
+      }
+      if(e.key==='h' || e.key==='H'){
+        if(e.ctrlKey || e.metaKey || e.altKey) return;
+        const el = e.target;
+        if(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el.isContentEditable) return;
+        if(overlay.style.display==='flex' || historyOverlay.style.display==='flex' || nicknameOverlay.style.display==='flex') return;
+        e.preventDefault();
+        openHistory();
       }
     });
 
