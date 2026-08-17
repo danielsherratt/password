@@ -53,6 +53,17 @@
       transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
     }
     .icon-btn:hover{transform:translateY(-2px);box-shadow:0 10px 18px rgba(37,99,235,.16);background:#eff6ff}
+    .icon-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 8px 18px rgba(37,99,235,.25)}
+    .icon-btn.active:hover{background:var(--accent-strong)}
+
+    .toast{
+      position:fixed;left:50%;bottom:28px;transform:translate(-50%,12px);
+      background:var(--text);color:#fff;padding:12px 18px;border-radius:12px;
+      box-shadow:0 14px 30px rgba(15,23,42,.28);font-size:.98rem;font-weight:600;
+      display:flex;align-items:center;gap:10px;z-index:80;
+      opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
     .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}
     .btn{
       border:1px solid var(--border);padding:12px 18px;border-radius:12px;background:var(--card-soft);color:var(--text);
@@ -150,7 +161,24 @@
     .history-list li span{white-space:nowrap;}
     .history-list .pwd{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;}
     .history-list .time{color:var(--muted);font-size:0.85rem;text-align:right;}
+    .history-list .history-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .history-copy{
+      border:1px solid #bfdbfe;border-radius:9px;padding:6px 10px;background:var(--accent-soft);
+      color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+      font-size:0.9rem;transition:transform .12s ease,background .12s ease;
+    }
+    .history-copy:hover{transform:translateY(-1px);background:#dbeafe}
     .history-list .empty{font-family:inherit;font-style:italic;justify-content:center;color:var(--muted);}
+    .history-list .nickname{
+      font-family:inherit;font-weight:600;color:var(--accent);font-size:0.85rem;
+      display:block;margin-bottom:2px;white-space:normal;overflow-wrap:anywhere;
+    }
+
+    .nickname-input{
+      width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border);
+      background:var(--card-soft);color:var(--text);font-size:1rem;font-family:inherit;
+    }
+    .nickname-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 
     @media (max-width:720px){
       body{
@@ -204,6 +232,10 @@
       .history-list .time{
         text-align:left;
       }
+      .history-list .history-actions{
+        width:100%;
+        justify-content:space-between;
+      }
       .modal{
         width:96%;
         max-height:90vh;
@@ -224,6 +256,9 @@
     <div class="topbar">
       <div class="title"><span class="logo">🔒</span>Password Helper</div>
       <div class="top-actions">
+        <button id="btnNicknames" class="icon-btn" title="Toggle nicknames" aria-label="Toggle nicknames" aria-pressed="true">
+          <i class="fa-solid fa-tag"></i>
+        </button>
         <button id="btnApi" class="icon-btn" title="API example" aria-label="Open API example">
           <i class="fa-solid fa-code"></i>
         </button>
@@ -245,6 +280,8 @@
       <button id="copyBtn" class="copy-btn"><i class="fa-regular fa-copy"></i></button>
     </div>
   </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- API modal -->
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
@@ -283,6 +320,19 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     </div>
   </div>
 
+  <!-- Nickname modal -->
+  <div id="nicknameOverlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="nicknameTitle">
+      <h3 id="nicknameTitle">Nickname</h3>
+      <p class="subtitle" style="margin:0 0 12px">Give this password a nickname so you can find it in your history.</p>
+      <input id="nicknameInput" class="nickname-input" type="text" maxlength="60" placeholder="e.g. Work email" aria-label="Nickname" />
+      <div class="m-controls">
+        <button id="dismissNickname" class="m-btn"><i class="fa-solid fa-xmark"></i> Dismiss</button>
+        <button id="okNickname" class="m-btn primary"><i class="fa-solid fa-check"></i> Ok</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const out = document.getElementById('passwordOutput');
     const copyBtn = document.getElementById('copyBtn');
@@ -297,9 +347,17 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     const clearConfirm = document.getElementById('clearConfirm');
     const confirmClear = document.getElementById('confirmClear');
     const cancelClear = document.getElementById('cancelClear');
+    const nicknameOverlay = document.getElementById('nicknameOverlay');
+    const nicknameInput = document.getElementById('nicknameInput');
+    const okNickname = document.getElementById('okNickname');
+    const dismissNickname = document.getElementById('dismissNickname');
+
+    const btnNicknames = document.getElementById('btnNicknames');
+    const toast = document.getElementById('toast');
 
     const HISTORY_KEY = 'pwdCopyHistory';
     const HISTORY_LIMIT = 50;
+    const NICKNAMES_KEY = 'pwdNicknamesEnabled';
     const nzFormatter = new Intl.DateTimeFormat('en-NZ', {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -325,9 +383,48 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!password || password.trim()==='') return;
       const history = readHistory();
       const now = Date.now();
+      const previous = history.find(entry => entry.pwd === password);
       const deduped = history.filter(entry => entry.pwd !== password);
-      deduped.unshift({pwd: password, ts: now});
+      deduped.unshift({pwd: password, ts: now, nickname: previous?.nickname ?? ''});
       writeHistory(deduped);
+    }
+
+    function nicknamesEnabled(){
+      try{
+        return localStorage.getItem(NICKNAMES_KEY) !== 'false';
+      }catch{
+        return true;
+      }
+    }
+
+    function setNicknamesEnabled(enabled){
+      try{
+        localStorage.setItem(NICKNAMES_KEY, String(enabled));
+      }catch{}
+      btnNicknames.classList.toggle('active', enabled);
+      btnNicknames.setAttribute('aria-pressed', String(enabled));
+    }
+
+    let toastTimer = null;
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=>toast.classList.remove('show'), 3000);
+    }
+
+    function hasNickname(password){
+      const entry = readHistory().find(item => item.pwd === password);
+      return Boolean(entry && entry.nickname);
+    }
+
+    function setNickname(password, nickname){
+      const history = readHistory();
+      const entry = history.find(item => item.pwd === password);
+      if(!entry) return;
+      entry.nickname = nickname;
+      writeHistory(history);
     }
 
     function formatTimestamp(ts){
@@ -348,12 +445,29 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
         const li = document.createElement('li');
         const pwd = document.createElement('span');
         pwd.className = 'pwd';
-        pwd.textContent = entry.pwd;
+        if(entry.nickname){
+          const nickname = document.createElement('span');
+          nickname.className = 'nickname';
+          nickname.textContent = entry.nickname;
+          pwd.appendChild(nickname);
+        }
+        pwd.appendChild(document.createTextNode(entry.pwd));
         const time = document.createElement('span');
         time.className = 'time';
         time.textContent = formatTimestamp(entry.ts);
+        const copy = document.createElement('button');
+        copy.className = 'history-copy';
+        copy.type = 'button';
+        copy.title = 'Copy to clipboard';
+        copy.setAttribute('aria-label', `Copy ${entry.nickname || 'password'} to clipboard`);
+        copy.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        copy.addEventListener('click', () => copyFromHistory(entry.pwd, copy));
+        const actions = document.createElement('span');
+        actions.className = 'history-actions';
+        actions.appendChild(time);
+        actions.appendChild(copy);
         li.appendChild(pwd);
-        li.appendChild(time);
+        li.appendChild(actions);
         historyList.appendChild(li);
       });
     }
@@ -385,14 +499,59 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!text) return;
       try{
         await navigator.clipboard.writeText(text);
+        const named = hasNickname(text);
         recordHistory(text);
         copyBtn.innerHTML='<i class="fa-solid fa-check"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
+        if(!named && nicknamesEnabled()) openNicknamePrompt(text);
       }catch{
         copyBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
       }
     }
+
+    async function copyFromHistory(password, btn){
+      try{
+        await navigator.clipboard.writeText(password);
+        btn.innerHTML='<i class="fa-solid fa-check"></i>';
+      }catch{
+        btn.innerHTML='<i class="fa-solid fa-xmark"></i>';
+      }
+      setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
+    }
+
+    let pendingNicknamePwd = null;
+
+    function openNicknamePrompt(password){
+      pendingNicknamePwd = password;
+      const existing = readHistory().find(entry => entry.pwd === password);
+      nicknameInput.value = existing?.nickname ?? '';
+      openOverlay(nicknameOverlay);
+      nicknameInput.focus();
+      nicknameInput.select();
+    }
+
+    function closeNicknamePrompt(){
+      pendingNicknamePwd = null;
+      closeOverlay(nicknameOverlay);
+    }
+
+    function saveNickname(){
+      if(pendingNicknamePwd) setNickname(pendingNicknamePwd, nicknameInput.value.trim());
+      closeNicknamePrompt();
+    }
+
+    okNickname.onclick = saveNickname;
+    dismissNickname.onclick = closeNicknamePrompt;
+    nicknameInput.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        saveNickname();
+      }
+    });
+    nicknameOverlay.addEventListener('click', e=>{
+      if(e.target===nicknameOverlay) closeNicknamePrompt();
+    });
 
     out.addEventListener('click',()=>copyText(out.textContent));
     copyBtn.addEventListener('click',()=>copyText(out.textContent));
@@ -403,11 +562,12 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       apiCode.focus();
     };
     closeApi.onclick=()=>closeOverlay(overlay);
-    document.getElementById('btnHistory').onclick=()=>{
+    function openHistory(){
       renderHistory();
       clearConfirm.classList.add('hidden');
       openOverlay(historyOverlay);
-    };
+    }
+    document.getElementById('btnHistory').onclick=openHistory;
     closeHistory.onclick=()=>{
       closeOverlay(historyOverlay);
       clearConfirm.classList.add('hidden');
@@ -447,9 +607,26 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(e.key==='Escape'){
         if(overlay.style.display==='flex') closeOverlay(overlay);
         if(historyOverlay.style.display==='flex') closeOverlay(historyOverlay);
+        if(nicknameOverlay.style.display==='flex') closeNicknamePrompt();
+        return;
+      }
+      if(e.key==='h' || e.key==='H'){
+        if(e.ctrlKey || e.metaKey || e.altKey) return;
+        const el = e.target;
+        if(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el.isContentEditable) return;
+        if(overlay.style.display==='flex' || historyOverlay.style.display==='flex' || nicknameOverlay.style.display==='flex') return;
+        e.preventDefault();
+        openHistory();
       }
     });
 
+    btnNicknames.onclick=()=>{
+      const enabled = !nicknamesEnabled();
+      setNicknamesEnabled(enabled);
+      showToast(`Nicknames is ${enabled ? 'enabled' : 'disabled'}`);
+    };
+
+    setNicknamesEnabled(nicknamesEnabled());
     showPassword('simple');
   </script>
 </body>
