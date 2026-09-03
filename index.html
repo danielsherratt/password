@@ -162,12 +162,14 @@
     .history-list .pwd{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;}
     .history-list .time{color:var(--muted);font-size:0.85rem;text-align:right;}
     .history-list .history-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-    .history-copy{
+    .history-copy,.history-tag{
       border:1px solid #bfdbfe;border-radius:9px;padding:6px 10px;background:var(--accent-soft);
       color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
-      font-size:0.9rem;transition:transform .12s ease,background .12s ease;
+      font-size:0.9rem;transition:transform .12s ease,background .12s ease,color .12s ease;
     }
-    .history-copy:hover{transform:translateY(-1px);background:#dbeafe}
+    .history-copy:hover,.history-tag:hover{transform:translateY(-1px);background:#dbeafe}
+    .history-tag.named{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .history-tag.named:hover{background:var(--accent-strong)}
     .history-list .empty{font-family:inherit;font-style:italic;justify-content:center;color:var(--muted);}
     .history-list .nickname{
       font-family:inherit;font-weight:600;color:var(--accent);font-size:0.85rem;
@@ -256,9 +258,6 @@
     <div class="topbar">
       <div class="title"><span class="logo">🔒</span>Password Helper</div>
       <div class="top-actions">
-        <button id="btnNicknames" class="icon-btn" title="Toggle nicknames" aria-label="Toggle nicknames" aria-pressed="true">
-          <i class="fa-solid fa-tag"></i>
-        </button>
         <button id="btnApi" class="icon-btn" title="API example" aria-label="Open API example">
           <i class="fa-solid fa-code"></i>
         </button>
@@ -323,12 +322,12 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
   <!-- Nickname modal -->
   <div id="nicknameOverlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document" aria-labelledby="nicknameTitle">
-      <h3 id="nicknameTitle">Nickname</h3>
-      <p class="subtitle" style="margin:0 0 12px">Give this password a nickname so you can find it in your history.</p>
-      <input id="nicknameInput" class="nickname-input" type="text" maxlength="60" placeholder="e.g. Work email" aria-label="Nickname" />
+      <h3 id="nicknameTitle">Name this password</h3>
+      <p class="subtitle" style="margin:0 0 12px">Give this password a name so you can find it in your history. Leave it blank to remove the name.</p>
+      <input id="nicknameInput" class="nickname-input" type="text" maxlength="60" placeholder="e.g. Work email" aria-label="Password name" />
       <div class="m-controls">
-        <button id="dismissNickname" class="m-btn"><i class="fa-solid fa-xmark"></i> Dismiss</button>
-        <button id="okNickname" class="m-btn primary"><i class="fa-solid fa-check"></i> Ok</button>
+        <button id="dismissNickname" class="m-btn"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        <button id="okNickname" class="m-btn primary"><i class="fa-solid fa-check"></i> Save</button>
       </div>
     </div>
   </div>
@@ -352,12 +351,10 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     const okNickname = document.getElementById('okNickname');
     const dismissNickname = document.getElementById('dismissNickname');
 
-    const btnNicknames = document.getElementById('btnNicknames');
     const toast = document.getElementById('toast');
 
     const HISTORY_KEY = 'pwdCopyHistory';
     const HISTORY_LIMIT = 50;
-    const NICKNAMES_KEY = 'pwdNicknamesEnabled';
     const nzFormatter = new Intl.DateTimeFormat('en-NZ', {
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -389,22 +386,6 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       writeHistory(deduped);
     }
 
-    function nicknamesEnabled(){
-      try{
-        return localStorage.getItem(NICKNAMES_KEY) !== 'false';
-      }catch{
-        return true;
-      }
-    }
-
-    function setNicknamesEnabled(enabled){
-      try{
-        localStorage.setItem(NICKNAMES_KEY, String(enabled));
-      }catch{}
-      btnNicknames.classList.toggle('active', enabled);
-      btnNicknames.setAttribute('aria-pressed', String(enabled));
-    }
-
     let toastTimer = null;
 
     function showToast(message){
@@ -412,11 +393,6 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       toast.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(()=>toast.classList.remove('show'), 3000);
-    }
-
-    function hasNickname(password){
-      const entry = readHistory().find(item => item.pwd === password);
-      return Boolean(entry && entry.nickname);
     }
 
     function setNickname(password, nickname){
@@ -462,9 +438,17 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
         copy.setAttribute('aria-label', `Copy ${entry.nickname || 'password'} to clipboard`);
         copy.innerHTML = '<i class="fa-regular fa-copy"></i>';
         copy.addEventListener('click', () => copyFromHistory(entry.pwd, copy));
+        const tag = document.createElement('button');
+        tag.className = entry.nickname ? 'history-tag named' : 'history-tag';
+        tag.type = 'button';
+        tag.title = entry.nickname ? 'Rename this password' : 'Name this password';
+        tag.setAttribute('aria-label', entry.nickname ? `Rename ${entry.nickname}` : 'Name this password');
+        tag.innerHTML = '<i class="fa-solid fa-tag"></i>';
+        tag.addEventListener('click', () => openNicknamePrompt(entry.pwd));
         const actions = document.createElement('span');
         actions.className = 'history-actions';
         actions.appendChild(time);
+        actions.appendChild(tag);
         actions.appendChild(copy);
         li.appendChild(pwd);
         li.appendChild(actions);
@@ -499,11 +483,9 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       if(!text) return;
       try{
         await navigator.clipboard.writeText(text);
-        const named = hasNickname(text);
         recordHistory(text);
         copyBtn.innerHTML='<i class="fa-solid fa-check"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
-        if(!named && nicknamesEnabled()) openNicknamePrompt(text);
       }catch{
         copyBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
         setTimeout(()=>copyBtn.innerHTML='<i class="fa-regular fa-copy"></i>',900);
@@ -537,7 +519,12 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     }
 
     function saveNickname(){
-      if(pendingNicknamePwd) setNickname(pendingNicknamePwd, nicknameInput.value.trim());
+      if(pendingNicknamePwd){
+        const nickname = nicknameInput.value.trim();
+        setNickname(pendingNicknamePwd, nickname);
+        renderHistory();
+        showToast(nickname ? `Saved as “${nickname}”` : 'Name removed');
+      }
       closeNicknamePrompt();
     }
 
@@ -605,9 +592,9 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
     });
     document.addEventListener('keydown',e=>{
       if(e.key==='Escape'){
-        if(overlay.style.display==='flex') closeOverlay(overlay);
-        if(historyOverlay.style.display==='flex') closeOverlay(historyOverlay);
         if(nicknameOverlay.style.display==='flex') closeNicknamePrompt();
+        else if(historyOverlay.style.display==='flex') closeOverlay(historyOverlay);
+        else if(overlay.style.display==='flex') closeOverlay(overlay);
         return;
       }
       if(e.key==='h' || e.key==='H'){
@@ -620,13 +607,6 @@ $Password = Invoke-RestMethod -Uri https://password.danieltesting.space/simple
       }
     });
 
-    btnNicknames.onclick=()=>{
-      const enabled = !nicknamesEnabled();
-      setNicknamesEnabled(enabled);
-      showToast(`Nicknames is ${enabled ? 'enabled' : 'disabled'}`);
-    };
-
-    setNicknamesEnabled(nicknamesEnabled());
     showPassword('simple');
   </script>
 </body>
